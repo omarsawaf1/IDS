@@ -5,30 +5,27 @@ import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.Packet;
 
-import java.io.PrintWriter;  
+public class OfflinePacketReader implements PacketReader {
+    private PcapHandle handle;
 
-public class OfflinePacketReader {
-    public static void main(String[] args) {
-        String pcapFile = "./ids.pcapng";
+    public OfflinePacketReader(String pcapFile) throws Exception {
+        this.handle = Pcaps.openOffline(pcapFile);
+    }
 
+    @Override
+    public Packet getNextPacket() {
         try {
-            // Open the PCAP file in offline mode
-            PcapHandle handle = Pcaps.openOffline(pcapFile);
-
-            Packet packet;
-            // Process packets one by one
-            PrintWriter output = new PrintWriter("output.txt");
-            while ((packet = handle.getNextPacket()) != null) {
-                // System.out.println(packet);
-                output.append(packet.toString());
-                // System.out.println("Successfully wrote to the file.");
-            }
-            output.close();
-
-            // Close the handle when done
-            handle.close();
+            return handle.getNextPacket();
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void close() {
+        if (handle != null) {
+            handle.close();
         }
     }
 }
