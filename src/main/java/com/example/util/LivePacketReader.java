@@ -15,7 +15,6 @@ public class LivePacketReader implements PacketReader {
     
 
     public LivePacketReader(String networkInterfaceIp) throws Exception {
-        // Use the proper pcap4j method to open live network interface
         // this.handle = Pcaps.openLive(networkInterfaceName, 65536, PcapHandle.PromiscuousMode.PROMISCUOUS, 10);
         InetAddress addr = InetAddress.getByName(networkInterfaceIp);
         nif = Pcaps.getDevByAddress(addr); 
