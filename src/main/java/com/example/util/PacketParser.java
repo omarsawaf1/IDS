@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 public class PacketParser {
     // System.out.println(PacketParser.parsePacket(packet));
-
     public static String[] Matcher(String packet) {
         String[] fields = packet.split("\\n");
         String[] extractedData=new String[8];  
