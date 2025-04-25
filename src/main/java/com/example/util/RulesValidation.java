@@ -5,9 +5,8 @@ import java.util.regex.Pattern;
 //  0          1                   2              3                       4            5
 //  TCP         any                 80         10.199.12.8	           any           any
 public class RulesValidation {
-    public static boolean rulesValidation(String str) {
-        // str = "TCP any 80 10.199.12.8 any any"; 
-        String[] token =Splitter(str);
+    public static boolean rulesValidation(String[] token) {
+        //  String[] rule = {"TCP", "any", "any", "76.223.11.49", "80"};
         if(validateProtocol(token[0]) && validateIp(token[1]) && validatePort(token[2]) && validateIp(token[3]) && validatePort(token[4])) {
             return true;
         }
@@ -28,9 +27,5 @@ public class RulesValidation {
         if(input==null) return false;
         if(input.equalsIgnoreCase("any")) return true;
         return (input.equals("TCP") || input.equals("UDP"));
-    }
-    private static String[] Splitter(String input) {
-        String[] tokens = input.split(" ");
-        return tokens;
     }
 }
