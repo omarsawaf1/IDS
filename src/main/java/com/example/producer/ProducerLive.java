@@ -1,17 +1,18 @@
 package com.example.producer;
 
+import java.util.concurrent.BlockingQueue;
+
 import com.example.PacketFactoryPattern.PacketReader;
 import com.example.PacketFactoryPattern.PacketReaderFactory;
 import com.example.designpatterns.StrategyPattern.ProducerStrategy;
 // import java.util.concurrent.*;
-import java.util.concurrent.BlockingQueue;
 
-public class ProducerPcap implements ProducerStrategy {
+public class ProducerLive implements ProducerStrategy {
     private PacketReader packetReader;
     private volatile boolean producing = true;
 
-    public ProducerPcap(String pcapFile) throws Exception {
-        this.packetReader =  PacketReaderFactory.createPacketReader("offline", pcapFile);
+    public ProducerLive(String networkInterfaceIp) throws Exception {
+        this.packetReader =  PacketReaderFactory.createPacketReader("live", networkInterfaceIp);
     }
 
     @Override

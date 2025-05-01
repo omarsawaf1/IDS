@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 
 import org.pcap4j.packet.Packet;
 
-import com.example.util.PacketReader;
-import com.example.util.PacketReaderFactory;
+import com.example.PacketFactoryPattern.PacketReader;
+import com.example.PacketFactoryPattern.PacketReaderFactory;
 
 // For testing purposes
 public class App 
