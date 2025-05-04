@@ -28,23 +28,53 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Pcap4j -->
     <dependency>
       <groupId>org.pcap4j</groupId>
       <artifactId>pcap4j-core</artifactId>
       <version>1.8.2</version>
     </dependency>
-
+    
+    <!-- Pcap4j -->
     <dependency>
       <groupId>org.pcap4j</groupId>
       <artifactId>pcap4j-packetfactory-static</artifactId>
       <version>1.8.2</version>
     </dependency>
 
-
+    <!-- Logging for pcap4j -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>1.7.36</version>
+    </dependency>
+
+    <!-- Elasticsearch Java Client -->
+    <dependency>
+      <groupId>co.elastic.clients</groupId>
+      <artifactId>elasticsearch-java</artifactId>
+      <version>8.12.0</version>
+    </dependency>
+
+    <!-- Jackson Databind for JSON handling -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.15.0</version>
+    </dependency>
+
+    <!-- Apache HTTP client, used by Elasticsearch REST client -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.13</version>
+    </dependency>
+
+    <!-- Elasticsearch REST client -->
+    <dependency>
+      <groupId>org.elasticsearch.client</groupId>
+      <artifactId>elasticsearch-rest-client</artifactId>
+      <version>8.12.0</version>
     </dependency>
 
   </dependencies>

@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Dockerfile reference guide at
 # https://docs.docker.com/go/dockerfile-reference/
@@ -75,3 +73,25 @@ COPY --from=package build/target/app.jar app.jar
 EXPOSE 4000
 
 ENTRYPOINT [ "java", "-jar", "app.jar" ]
+
+# For testing purposes
+# # 1) Build stage
+# FROM maven:3.9.9-eclipse-temurin-21 AS build
+# WORKDIR /workspace
+# COPY pom.xml .
+# # only download dependencies
+# # RUN mvn dependency:go-offline -B
+# # Ensure the target directory exists before copying
+# # RUN mkdir -p /workspace/target
+# COPY src ./src
+# # package into jar-with-dependencies
+# RUN mvn clean package -DskipTests -B
+
+# # 2) Runtime stage
+# FROM eclipse-temurin:21-jre
+# WORKDIR /app
+# # copy the fat‑jar from the build stage
+# COPY --from=build /workspace/target/demo-1.0-SNAPSHOT.jar app.jar
+
+# # default command
+# CMD ["java","-jar","app.jar"]
