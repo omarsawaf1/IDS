@@ -1,4 +1,4 @@
-package com.example.ElasticSearch;
+package com.example.database.ElasticSearch;
 
 public class IPv4Header {
     private String sourceIp;

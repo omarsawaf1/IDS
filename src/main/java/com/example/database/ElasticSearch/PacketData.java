@@ -1,4 +1,4 @@
-package com.example.ElasticSearch;
+package com.example.database.ElasticSearch;
 
 public class PacketData {
     private EthernetHeader ethernet;
