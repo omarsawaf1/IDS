@@ -91,7 +91,7 @@ RUN mvn clean package -DskipTests -B
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 # copy the fat‑jar from the build stage
-COPY --from=build /workspace/target/demo-1.0-SNAPSHOT.jar app.jar
+COPY --from=build /workspace/target/IDS-1.0-SNAPSHOT.jar app.jar
 
 # default command
 CMD ["java","-jar","app.jar"]
