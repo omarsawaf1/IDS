@@ -1,4 +1,4 @@
-package com.example.ElasticSearch;
+package com.example.database.ElasticSearch;
 
 public class App {
     public static void main(String[] args) {

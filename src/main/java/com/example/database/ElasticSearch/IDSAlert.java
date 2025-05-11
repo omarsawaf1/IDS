@@ -1,4 +1,4 @@
-package com.example.ElasticSearch;
+package com.example.database.ElasticSearch;
 
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
