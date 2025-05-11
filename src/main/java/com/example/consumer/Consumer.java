@@ -2,7 +2,6 @@ package com.example.consumer;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.designpatterns.StrategyPattern.ConsumerStrategy;
@@ -12,7 +11,6 @@ import com.example.util.PacketRule;
 import com.example.concurrent.*;
 import com.example.database.mysql.*;
 import com.example.util.PacketParser;
-import com.example.database.*;
 import com.example.database.ElasticSearch.ElasticsearchManager;
 public class Consumer implements ConsumerStrategy {
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
