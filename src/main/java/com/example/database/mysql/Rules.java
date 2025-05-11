@@ -17,9 +17,9 @@ public class Rules {
         return dataSource.getConnection();
     }
 
-    public boolean insert(String protocol, String srcIP, String dstPort, String dstMac, String srcMac, String srcPort, String dstIP, int userid) {
-        String sql = "INSERT INTO rules (protocol, srcIP, dstPort, dstMac, srcMac, srcPort, dstIP, userid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+    public int insert(String protocol, String srcIP, String dstPort, String dstMac, String srcMac, String srcPort, String dstIP, int userid) {
+        String sql = "INSERT INTO rules (protocol, srcMac, srcIP, srcPort, dstMac, dstIP, dstPort, userid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, protocol);
             ps.setString(2, srcIP);
             ps.setString(3, dstPort);
@@ -28,11 +28,16 @@ public class Rules {
             ps.setString(6, srcPort);
             ps.setString(7, dstIP);
             ps.setInt(8, userid);
-            return ps.executeUpdate() > 0;
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return -1;
     }
     //add one that select all rules based on userid
     public List<Map<String, Object>> searchUserRulesList(int userId) {

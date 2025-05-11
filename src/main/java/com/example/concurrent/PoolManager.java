@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public final class PoolManager {
-    // 4 threads for DB
+    // 4 threads for engineids
     private static final ExecutorService EngineIds =
     Executors.newFixedThreadPool(5);
 

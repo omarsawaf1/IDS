@@ -8,11 +8,13 @@ import java.sql.*;
 public class User {
 
     private final DataSource dataSource;
-
+    private static int userId;
     public User() {
         this.dataSource = DatabaseConnectionBools.getDataSource();
     }
-
+    public static int getUserId() {
+        return userId;
+    }
     public int signup(String username, String password) {
         String sql = "INSERT INTO user (password, username) VALUES (?, ?)";
         try (Connection con = dataSource.getConnection();
@@ -25,7 +27,8 @@ public class User {
             if (rowsAffected > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
-                        return rs.getInt(1);
+                        userId = rs.getInt(1);
+                        return userId;
                     }
                 }
             }
@@ -48,7 +51,8 @@ public class User {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt("userid");
+                    userId = rs.getInt("userid");
+                    return userId;
                 }
             }
             return -1;

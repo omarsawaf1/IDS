@@ -1,0 +1,33 @@
+# Diff Summary
+
+Date : 2025-05-11 13:52:55
+
+Directory c:\\Users\\ahmed\\OneDrive\\Desktop\\information\\college\\second term year 3\\oop\\project\\IDS
+
+Total : 5 files,  18 codes, 42 comments, 2 blanks, all 62 lines
+
+[Summary](results.md) / [Details](details.md) / Diff Summary / [Diff Details](diff-details.md)
+
+## Languages
+| language | files | code | comment | blank | total |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| Java | 5 | 18 | 42 | 2 | 62 |
+
+## Directories
+| path | files | code | comment | blank | total |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| . | 5 | 18 | 42 | 2 | 62 |
+| src | 5 | 18 | 42 | 2 | 62 |
+| src\\main | 4 | 18 | 20 | 2 | 40 |
+| src\\main\\java | 4 | 18 | 20 | 2 | 40 |
+| src\\main\\java\\com | 4 | 18 | 20 | 2 | 40 |
+| src\\main\\java\\com\\example | 4 | 18 | 20 | 2 | 40 |
+| src\\main\\java\\com\\example (Files) | 1 | -8 | 18 | -4 | 6 |
+| src\\main\\java\\com\\example\\database | 3 | 26 | 2 | 6 | 34 |
+| src\\main\\java\\com\\example\\database\\mysql | 3 | 26 | 2 | 6 | 34 |
+| src\\test | 1 | 0 | 22 | 0 | 22 |
+| src\\test\\java | 1 | 0 | 22 | 0 | 22 |
+| src\\test\\java\\com | 1 | 0 | 22 | 0 | 22 |
+| src\\test\\java\\com\\example | 1 | 0 | 22 | 0 | 22 |
+
+[Summary](results.md) / [Details](details.md) / Diff Summary / [Diff Details](diff-details.md)
