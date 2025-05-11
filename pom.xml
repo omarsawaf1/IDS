@@ -16,8 +16,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <jnetpcap.version>LATEST</jnetpcap.version>
-    <protocol.version>LATEST</protocol.version>
   </properties>
 
   <dependencies>
@@ -42,14 +40,6 @@
       <version>1.8.2</version>
     </dependency>
 
-    <!-- Logging for pcap4j -->
-    <!-- <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>2.0.17</version>
-              1.7.36
-    </dependency> -->
-
     <!-- Elasticsearch Java Client -->
     <dependency>
       <groupId>co.elastic.clients</groupId>
@@ -58,10 +48,11 @@
     </dependency>
 
     <!-- Jackson Databind for JSON handling -->
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.15.0</version>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.19.0</version>
     </dependency>
 
     <!-- Apache HTTP client, used by Elasticsearch REST client -->
@@ -103,21 +94,23 @@
   
     <!-- Dotenv library for loading environment variables from .env file -->
     <dependency>
-      <groupId>io.github.cdimascio</groupId>
-      <artifactId>dotenv-java</artifactId>
-      <version>2.2.0</version>
+        <groupId>io.github.cdimascio</groupId>
+        <artifactId>dotenv-java</artifactId>
+        <version>3.2.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
     <!-- Used for MySQL database operations -->
     <dependency>
-      <groupId>com.mysql</groupId>
-      <artifactId>mysql-connector-j</artifactId>
-      <version>8.0.33</version> <!-- Use latest -->
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>9.3.0</version>
     </dependency>
     <!-- HikariCP is a JDBC connection pool -->
+    <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
     <dependency>
-      <groupId>com.zaxxer</groupId>
-      <artifactId>HikariCP</artifactId>
-      <version>5.1.0</version>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>6.3.0</version>
     </dependency>
 
   </dependencies>
