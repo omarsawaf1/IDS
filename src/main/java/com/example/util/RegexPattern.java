@@ -4,8 +4,8 @@ package com.example.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 // Protocol Source:MAC_Address Source:IP_Address Source:Port Destination:MAC_Address Destination:IP_Address Destination:Port  Message
@@ -119,3 +119,4 @@ public class RegexPattern {
     }
     
 }
+
