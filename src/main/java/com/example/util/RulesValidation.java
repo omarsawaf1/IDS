@@ -4,20 +4,27 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory; 
 
-// Protocol Source:IP_Address Source:Port   mac Destination:IP_Address Destination:Port  Message
-//  0          1                   2              3                       4            5
-//  TCP         any                 80         10.199.12.8	           any           any
+// Protocol Source:MAC_Address Source:IP_Address Source:Port Destination:MAC_Address Destination:IP_Address Destination:Port  Message
+//  0          1                   2              3                       4            5                      6
+//  TCP         any                 80         10.199.12.8	           any           any                     any
+
 public class RulesValidation {
     private static final Logger log = LoggerFactory.getLogger(RegexPattern.class);
     public static boolean rulesValidation(String[] token) {
-        //  String[] rule = {"TCP", "any", "any", "76.223.11.49", "80"};
+        // String[] rule = {"TCP","f4:b3:01:11:f1:4d", "any", "any","d4:6b:a6:cb:be:82", "76.223.11.49", "80"};
         log.info("Starting Validation...");
-        log.debug("Protocol: " + token[0] + " Source IP: " + token[1] + " Source Port: " + token[2] + " Destination IP: " + token[3] + " Destination Port: " + token[4]);
-        if(validateProtocol(token[0]) && validateIp(token[1]) && validatePort(token[2]) && validateIp(token[3]) && validatePort(token[4])) {
+        log.debug("Protocol: " + token[0] + " Source MAC: " + token[1] + " Source IP: " + token[2] + " Source Port: " + token[3] + " Destination MAC: " + token[4] + " Destination IP: " + token[5] + " Destination Port: " + token[6]);
+        if(validateProtocol(token[0]) && validateMac(token[1]) && validateIp(token[2]) && validatePort(token[3]) && validateMac(token[4]) && validateIp(token[5]) && validatePort(token[6])) {
             return true;
         }
         log.info("Finishing Validation...");
         return false;
+    }
+    private static boolean validateMac(String input) {
+        if(input==null) return false;
+        if(input.equalsIgnoreCase("any")) return true;
+        Pattern p = Pattern.compile("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
+        return p.matcher(input).matches();
     }
     private static boolean validateIp(String input) {
         if(input==null) return false;

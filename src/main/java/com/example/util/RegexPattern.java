@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 
-// Protocol Source:IP_Address Source:Port  Destination:IP_Address Destination:Port  Message
-//  0          1                   2              3                       4            5
-//  TCP         any                 80         10.199.12.8	           any           any
+// Protocol Source:MAC_Address Source:IP_Address Source:Port Destination:MAC_Address Destination:IP_Address Destination:Port  Message
+//  0          1                   2              3                       4            5                      6
+//  TCP         any                 80         10.199.12.8	           any           any                     any
 
 public class RegexPattern {
     private static final Logger log = LoggerFactory.getLogger(RegexPattern.class);
@@ -56,7 +56,7 @@ public class RegexPattern {
   Option: [Kind: 1 (No Operation)]
   Option: [Kind: 4 (SACK Permitted)] [Length: 2 bytes]
 """;
-        String[] rule = {"TCP", "any", "any", "76.223.11.49", "80"};
+        String[] rule = {"TCP","f4:b3:01:11:f1:4d", "192.168.1.13", "57485","d4:6b:a6:cb:be:82", "76.223.11.49", "80"};
         System.out.println("Rule Validation is :"+RulesValidation.rulesValidation(rule));
         // System.out.println(matcher.matches());
         
@@ -84,23 +84,31 @@ public class RegexPattern {
                  .append(Pattern.quote(rule[0]))
                  .append("\\b)");
         }
-        // Source IP
+        // Source MAC
         if (!rule[1].equalsIgnoreCase("any")) {
-            String sip = rule[1].replace(".", "\\.");
+            regex.append("(?=.*Source address: ").append(rule[1]).append(")");
+        }
+        // Source IP
+        if (!rule[2].equalsIgnoreCase("any")) {
+            String sip = rule[2].replace(".", "\\.");
             regex.append("(?=.*Source address: /").append(sip).append(")");
         }
         // Source Port
-        if (!rule[2].equalsIgnoreCase("any")) {
-            regex.append("(?=.*Source port: ").append(rule[2]).append(")");
+        if (!rule[3].equalsIgnoreCase("any")) {
+            regex.append("(?=.*Source port: ").append(rule[3]).append(")");
+        }
+        // Destination MAC
+        if (!rule[4].equalsIgnoreCase("any")) {
+            regex.append("(?=.*Destination address: ").append(rule[4]).append(")");
         }
         // Destination IP
-        if (!rule[3].equalsIgnoreCase("any")) {
-            String dip = rule[3].replace(".", "\\.");
+        if (!rule[5].equalsIgnoreCase("any")) {
+            String dip = rule[5].replace(".", "\\.");
             regex.append("(?=.*Destination address: /").append(dip).append(")");
         }
         // Destination Port
-        if (!rule[4].equalsIgnoreCase("any")) {
-            regex.append("(?=.*Destination port: ").append(rule[4]).append(")");
+        if (!rule[6].equalsIgnoreCase("any")) {
+            regex.append("(?=.*Destination port: ").append(rule[6]).append(")");
         }
     
         regex.append(".*");  // match the rest of the input
