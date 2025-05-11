@@ -1,0 +1,60 @@
+Date : 2025-05-11 17:55:32
+Directory : c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS
+Total : 16 files,  102 codes, 8 comments, 12 blanks, all 122 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Java     |         13 |         60 |          1 |          9 |         70 |
+| XML      |          3 |         42 |          7 |          3 |         52 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                                                   | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                                                      |         16 |        102 |          8 |         12 |        122 |
+| . (Files)                                                                                                                                                              |          1 |         16 |          7 |          1 |         24 |
+| src                                                                                                                                                                    |         14 |         73 |          1 |         10 |         84 |
+| src\main                                                                                                                                                               |         14 |         73 |          1 |         10 |         84 |
+| src\main\java                                                                                                                                                          |         13 |         60 |          1 |          9 |         70 |
+| src\main\java\com                                                                                                                                                      |         13 |         60 |          1 |          9 |         70 |
+| src\main\java\com\example                                                                                                                                              |         13 |         60 |          1 |          9 |         70 |
+| src\main\java\com\example (Files)                                                                                                                                      |          1 |          3 |         -3 |          0 |          0 |
+| src\main\java\com\example\PacketFactoryPattern                                                                                                                         |          3 |         20 |          2 |          4 |         26 |
+| src\main\java\com\example\concurrent                                                                                                                                   |          1 |          2 |          0 |         -2 |          0 |
+| src\main\java\com\example\database                                                                                                                                     |          3 |         -1 |          0 |         -2 |         -3 |
+| src\main\java\com\example\database\ElasticSearch                                                                                                                       |          2 |         -4 |          0 |         -1 |         -5 |
+| src\main\java\com\example\database\mysql                                                                                                                               |          1 |          3 |          0 |         -1 |          2 |
+| src\main\java\com\example\designpatterns                                                                                                                               |          1 |         -1 |          0 |          0 |         -1 |
+| src\main\java\com\example\designpatterns\ProducerConsumer                                                                                                              |          1 |         -1 |          0 |          0 |         -1 |
+| src\main\java\com\example\producer                                                                                                                                     |          2 |         14 |         -1 |          5 |         18 |
+| src\main\java\com\example\util                                                                                                                                         |          2 |         23 |          3 |          4 |         30 |
+| src\main\resources                                                                                                                                                     |          1 |         13 |          0 |          1 |         14 |
+| target                                                                                                                                                                 |          1 |         13 |          0 |          1 |         14 |
+| target\classes                                                                                                                                                         |          1 |         13 |          0 |          1 |         14 |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                                                                               | language | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\pom.xml                                                                         | XML      |         16 |          7 |          1 |         24 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\App.java                                              | Java     |          3 |         -3 |          0 |          0 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\PacketFactoryPattern\LivePacketReader.java            | Java     |          4 |          1 |          2 |          7 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\PacketFactoryPattern\OfflinePacketReader.java         | Java     |         10 |          1 |          0 |         11 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\PacketFactoryPattern\PacketReaderFactory.java         | Java     |          6 |          0 |          2 |          8 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\concurrent\RuleQueue.java                             | Java     |          2 |          0 |         -2 |          0 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\database\ElasticSearch\App.java                       | Java     |         -4 |          0 |          0 |         -4 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\database\ElasticSearch\ElasticsearchManager.java      | Java     |          0 |          0 |         -1 |         -1 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\database\mysql\User.java                              | Java     |          3 |          0 |         -1 |          2 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\designpatterns\ProducerConsumer\ProducerConsumer.java | Java     |         -1 |          0 |          0 |         -1 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\producer\ProducerLive.java                            | Java     |          9 |         -1 |          2 |         10 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\producer\ProducerPcap.java                            | Java     |          5 |          0 |          3 |          8 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\util\RegexPattern.java                                | Java     |         11 |          3 |          2 |         16 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\java\com\example\util\RulesValidation.java                             | Java     |         12 |          0 |          2 |         14 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\src\main\resources\log4j2.xml                                                   | XML      |         13 |          0 |          1 |         14 |
+| c:\Users\ahmed\OneDrive\Desktop\information\college\second term year 3\oop\project\IDS\target\classes\log4j2.xml                                                       | XML      |         13 |          0 |          1 |         14 |
+| Total                                                                                                                                                                  |          |        102 |          8 |         12 |        122 |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

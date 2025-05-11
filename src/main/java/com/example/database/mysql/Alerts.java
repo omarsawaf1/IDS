@@ -16,7 +16,7 @@ public class Alerts {
 
     public boolean insert(String protocol, String srcIP, String dstPort, String dstMac,
                           String srcMac, String srcPort, String dstIP, int userid, int rulesid) {
-        String sql = "INSERT INTO alerts (protocol, srcIP, dstPort, dstMac, srcMac, srcPort, dstIP, userid, rulesid) " +
+        String sql = "INSERT INTO alerts (protocol, srcMac, srcIP, srcPort, dstMac, dstIP, dstPort, userid, rulesid) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         //to prevent sql injection we use prepared statement
         try (Connection con = dataSource.getConnection();
