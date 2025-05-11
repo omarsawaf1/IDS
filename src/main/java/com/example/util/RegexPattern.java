@@ -4,12 +4,16 @@ package com.example.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 
 // Protocol Source:IP_Address Source:Port  Destination:IP_Address Destination:Port  Message
 //  0          1                   2              3                       4            5
 //  TCP         any                 80         10.199.12.8	           any           any
 
 public class RegexPattern {
+    private static final Logger log = LoggerFactory.getLogger(RegexPattern.class);
     public static void main(String[] args) {
     String packet="""
 [Ethernet Header (14 bytes)]
@@ -53,8 +57,9 @@ public class RegexPattern {
   Option: [Kind: 4 (SACK Permitted)] [Length: 2 bytes]
 """;
         String[] rule = {"TCP", "any", "any", "76.223.11.49", "80"};
-        System.out.println(RulesValidation.rulesValidation(rule));
+        System.out.println("Rule Validation is :"+RulesValidation.rulesValidation(rule));
         // System.out.println(matcher.matches());
+        
         Pattern p = patternCreate(rule);
         Matcher m = p.matcher(packet);
 
@@ -70,6 +75,7 @@ public class RegexPattern {
 
     }
     public static Pattern patternCreate(String[] rule) {
+        log.info("Starting Pattern Creation...");
         StringBuilder regex = new StringBuilder("(?s)");  // (?s) = dot matches newlines
     
         // Protocol
@@ -98,7 +104,9 @@ public class RegexPattern {
         }
     
         regex.append(".*");  // match the rest of the input
-        System.out.println(regex);
+        // System.out.println(regex);
+        log.debug("Regex: {}" , regex);
+        log.info("Finishing Pattern Creation...");
         return Pattern.compile(regex.toString());
     }
     

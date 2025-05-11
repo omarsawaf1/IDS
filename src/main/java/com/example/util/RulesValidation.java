@@ -1,15 +1,22 @@
 package com.example.util;
-import java.util.regex.Pattern; 
+import java.util.regex.Pattern;
 
-// Protocol Source:IP_Address Source:Port  Destination:IP_Address Destination:Port  Message
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory; 
+
+// Protocol Source:IP_Address Source:Port   mac Destination:IP_Address Destination:Port  Message
 //  0          1                   2              3                       4            5
 //  TCP         any                 80         10.199.12.8	           any           any
 public class RulesValidation {
+    private static final Logger log = LoggerFactory.getLogger(RegexPattern.class);
     public static boolean rulesValidation(String[] token) {
         //  String[] rule = {"TCP", "any", "any", "76.223.11.49", "80"};
+        log.info("Starting Validation...");
+        log.debug("Protocol: " + token[0] + " Source IP: " + token[1] + " Source Port: " + token[2] + " Destination IP: " + token[3] + " Destination Port: " + token[4]);
         if(validateProtocol(token[0]) && validateIp(token[1]) && validatePort(token[2]) && validateIp(token[3]) && validatePort(token[4])) {
             return true;
         }
+        log.info("Finishing Validation...");
         return false;
     }
     private static boolean validateIp(String input) {

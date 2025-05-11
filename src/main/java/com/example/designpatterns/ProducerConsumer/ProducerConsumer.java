@@ -3,7 +3,6 @@ package com.example.designpatterns.ProducerConsumer;
 import com.example.designpatterns.StrategyPattern.ConsumerStrategy;
 import com.example.designpatterns.StrategyPattern.ProducerStrategy;
 
-import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 

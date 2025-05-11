@@ -1,5 +1,8 @@
 package com.example.producer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.example.PacketFactoryPattern.PacketReader;
 import com.example.PacketFactoryPattern.PacketReaderFactory;
 import com.example.designpatterns.StrategyPattern.ProducerStrategy;
@@ -7,6 +10,8 @@ import com.example.designpatterns.StrategyPattern.ProducerStrategy;
 import java.util.concurrent.BlockingQueue;
 
 public class ProducerPcap implements ProducerStrategy {
+    private static final Logger logger = LoggerFactory.getLogger(ProducerPcap.class);
+
     private PacketReader packetReader;
     private volatile boolean producing = true;
 
@@ -20,9 +25,11 @@ public class ProducerPcap implements ProducerStrategy {
             while (producing) {
                 var packet = packetReader.getNextPacket();
                 if (packet == null) break;
+                logger.debug("Producing packet: {}", packet);
                 queue.put(packet.toString());
             }
         } catch (InterruptedException e) {
+            logger.error("InterruptedException while producing packets", e);
             Thread.currentThread().interrupt();
         }
     }

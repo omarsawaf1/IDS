@@ -2,6 +2,9 @@ package com.example.PacketFactoryPattern;
 
 import java.net.InetAddress;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
@@ -9,8 +12,10 @@ import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.Packet;
 
 public class LivePacketReader implements PacketReader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LivePacketReader.class);
+
     private PcapHandle handle;
-    private PromiscuousMode mode ;
+    private PromiscuousMode mode;
     private PcapNetworkInterface nif;
     
 
@@ -19,7 +24,7 @@ public class LivePacketReader implements PacketReader {
         InetAddress addr = InetAddress.getByName(networkInterfaceIp);
         nif = Pcaps.getDevByAddress(addr); 
             if (nif == null) {
-                System.err.println("No network interface found for the provided address.");
+                LOGGER.error("No network interface found for the provided address.");
                 return;
             }
         mode = PromiscuousMode.PROMISCUOUS;
@@ -33,7 +38,8 @@ public class LivePacketReader implements PacketReader {
         try {
             return handle.getNextPacket();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Error while getting next packet", e);
+            // e.printStackTrace();
             return null;
         }
     }
@@ -42,6 +48,7 @@ public class LivePacketReader implements PacketReader {
     public void close() {
         if (handle != null) {
             handle.close();
+            LOGGER.info("Closed pcap handle");
         }
     }
 }
