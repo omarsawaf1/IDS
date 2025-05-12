@@ -34,7 +34,7 @@ public class Consumer implements ConsumerStrategy {
                 boolean alert = false;
                 logger.debug("Processed data: {}", data);
                 Map<Integer, PacketRule> queueRules = RuleQueue.getQueueRules();
-                // Map<String, String> parsed = PacketParser.parsePacket(data);
+                Map<String, String> parsed = PacketParser.parsePacket(data);
                 for (Map.Entry<Integer, PacketRule> entry : queueRules.entrySet()) {
                     ruleId = entry.getKey();
                     rule = entry.getValue();
@@ -44,7 +44,7 @@ public class Consumer implements ConsumerStrategy {
                         break;
                     }
                 }
-                compute(data, ruleId, alert);
+                compute(data, parsed,ruleId, alert);
                 System.out.println(count++);
             } catch (InterruptedException e) {
                 logger.error("Consumer interrupted", e);
@@ -54,23 +54,24 @@ public class Consumer implements ConsumerStrategy {
         logger.info("Consumer stopped.");
     }
 
-    public void compute(String data, Integer ruleId, boolean alertflag) {
+    public void compute(String data, Map<String, String> parsed ,Integer ruleId, boolean alertflag) {
         User user = new User();
         EngineIds engineIds = EngineIds.getInstance();
+        System.out.println(data);
         Alerts alert = new Alerts();
-        // if(alertflag){
-        //     alert.insert(
-        //             parsed.get("protocol"),
-        //             parsed.get("srcMac"),
-        //             parsed.get("srcIp"),
-        //             parsed.get("srcPort"),
-        //             parsed.get("dstMac"),
-        //             parsed.get("dstIp"),
-        //             parsed.get("dstPort"),
-        //             user.getUserId(),
-        //             ruleId
-        //         );
-        // }
+        if(alertflag){
+            alert.insert(
+                    parsed.get("protocol"),
+                    parsed.get("srcMac"),
+                    parsed.get("srcIp"),
+                    parsed.get("srcPort"),
+                    parsed.get("dstMac"),
+                    parsed.get("dstIp"),
+                    parsed.get("dstPort"),
+                    user.getUserId(),
+                    ruleId
+                );
+        }
 
         ElasticsearchManager obj = new ElasticsearchManager();
         obj.indexUserPacket(user.getUserId(), data);
