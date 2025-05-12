@@ -7,7 +7,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import javax.swing.border.*;
+// import javax.swing.border.*;
 
 public class MainAppWindow extends JFrame {
     private JTable packetTable;

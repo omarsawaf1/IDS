@@ -286,12 +286,10 @@ public class UIFactory {
     }
 
     public static Object getIcon(String string) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getIcon'");
     }
 
     public static JButton createToolBarButton(String string, Object icon) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'createToolBarButton'");
     }
 }
