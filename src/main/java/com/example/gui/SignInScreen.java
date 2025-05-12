@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import com.example.concurrent.RuleQueue;
 import com.example.database.mysql.User;
 
 public class SignInScreen extends JFrame {
@@ -105,11 +107,12 @@ public class SignInScreen extends JFrame {
                         if (userId > 0) {
                             // Successful login
                             msgLabel.setText("Login successful!");
+                            
                             loginSuccess = true;
                             
                             //  thumbs up animation
                             startAnimation(true);
-                            
+                            RuleQueue.queueLoadRulesList();
                             // Delay opening the next screen until animation completes
                             Timer delayTimer = new Timer(2000, new ActionListener() {
                                 @Override

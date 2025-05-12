@@ -44,7 +44,7 @@ public class RulesDialog extends JDialog {
             }
         };
         // 
-        RuleQueue.queueLoadRulesList();
+        // RuleQueue.queueLoadRulesList();
         for (PacketRule rule : RuleQueue.getQueueRules().values()) {
             rulesTableModel.addRow(new Object[]{rule.getId(), rule.getRawRule()[0], rule.getRawRule()[1], rule.getRawRule()[2], rule.getRawRule()[3], rule.getRawRule()[4], rule.getRawRule()[5], rule.getRawRule()[6]}); 
         }

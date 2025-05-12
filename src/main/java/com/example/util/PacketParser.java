@@ -1,66 +1,115 @@
 package com.example.util;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
+
+import org.pcap4j.packet.Packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.example.PacketFactoryPattern.PacketReader;
+import com.example.PacketFactoryPattern.PacketReaderFactory;
+
 public class PacketParser {
     private static final Logger logger = LoggerFactory.getLogger(PacketParser.class);
+     // Pre-compiled patterns
+    private static final Pattern PROTO_P = Pattern.compile("^\\s*Protocol:\\s*\\d+\\s*\\((TCP|UDP|ICMP|DNS|ARP|SCTP)\\)");
+    private static final Pattern ETH_DEST_P = Pattern.compile("^\\s*Destination address: ([0-9a-fA-F:]{2,})");
+    private static final Pattern ETH_SRC_P  = Pattern.compile("^\\s*Source address: ([0-9a-fA-F:]{2,})");
+    private static final Pattern IP_SRC_P   = Pattern.compile("^\\s*Source address: /?([0-9.]+)");
+    private static final Pattern IP_DST_P   = Pattern.compile("^\\s*Destination address: /?([0-9.]+)");
+    private static final Pattern PORT_SRC_P = Pattern.compile("^\\s*Source port: (\\d+)");
+    private static final Pattern PORT_DST_P = Pattern.compile("^\\s*Destination port: (\\d+)");
+    private static final Pattern HEX_P      = Pattern.compile("^.*Hex stream:\\s*([0-9A-Fa-f ]+)$");
 
-    public static String[] matcher(String packet) {
-        logger.debug("Parsing packet: {}", packet);
-        String[] fields = packet.split("\\n");
+// public static void main(String[] args) {
+//         System.out.println( "Hello World!" );
+//          try {
+//             String mode ="offline";
+//             String  source="capture.pcapng";
+//             PacketReader reader = PacketReaderFactory.createPacketReader(mode, source);
+//             Packet packet;
+//             while ((packet = reader.getNextPacket()) != null) {
+//                 // System.out.println(packet);
+//                 Map<String, String> packetData = parsePacket(packet.toString());
+//                 if(packetData == null) {
+//                     System.out.println("Failed to parse packet");
+//                     break;
+//                 }
+//             //    System.out.println(matcher(packet.toString()));
+//                 System.out.println(packetData);
+//             }
+//             reader.close();
+//         } catch (Exception e) {
+//             e.printStackTrace();
+//         }
+//     }
+    public static String[] matcher(String packetText) {
+        logger.debug("Parsing packet: {}", packetText);
+        String[] extracted = new String[8];
 
-        // Check if the packet has enough data to parse
-        if (fields.length < 3) {
-            logger.warn("Malformed packet: {} (not enough fields)", packet);
-            return new String[8]; // Return empty data array if packet is malformed
+        String[] lines = packetText.split("\\r?\\n");
+        for (String line : lines) {
+            Matcher m;
+            // 1. Protocol
+            m = PROTO_P.matcher(line);
+            if (m.find()) {
+                extracted[0] = m.group(1);
+                continue;
+            }
+            // 2. Ethernet Destination MAC (first occurrence)
+            m = ETH_DEST_P.matcher(line);
+            if (m.find() && extracted[5] == null) {
+                extracted[5] = m.group(1);
+                continue;
+            }
+            // 3. Ethernet Source MAC (first occurrence)
+            m = ETH_SRC_P.matcher(line);
+            if (m.find() && extracted[6] == null) {
+                extracted[6] = m.group(1);
+                continue;
+            }
+            // 4. IP Source
+            m = IP_SRC_P.matcher(line);
+            if (m.find()) {
+                extracted[1] = m.group(1);
+                continue;
+            }
+            // 5. IP Destination
+            m = IP_DST_P.matcher(line);
+            if (m.find()) {
+                extracted[3] = m.group(1);
+                continue;
+            }
+            // 6. TCP/UDP Source Port
+            m = PORT_SRC_P.matcher(line);
+            if (m.find()) {
+                extracted[2] = m.group(1);
+                continue;
+            }
+            // 7. TCP/UDP Destination Port
+            m = PORT_DST_P.matcher(line);
+            if (m.find()) {
+                extracted[4] = m.group(1);
+                continue;
+            }
+            // 8. Hex Stream → ASCII
+            m = HEX_P.matcher(line);
+            if (m.find()) {
+                String hex = m.group(1).replaceAll("\\s+", "");
+                extracted[7] = HexToAscii.hexToAscii(hex);
+            }
         }
 
-        String[] extractedData = new String[8];
+        logger.debug("Extracted data: protocol={}, srcIP={}, srcPort={}, dstIP={}, dstPort={}, ethDst={}, ethSrc={}, payload={}",
+                extracted[0], extracted[1], extracted[2], extracted[3], extracted[4], extracted[5], extracted[6], extracted[7]);
 
-        try {
-            // Extracting MAC addresses
-            if (fields.length > 1) {
-                extractedData[5] = fields[1].substring(fields[1].indexOf(":") + 2);
-            }
-            if (fields.length > 2) {
-                extractedData[6] = fields[2].substring(fields[2].indexOf(":") + 2);
-            }
-
-            // Parsing fields based on known patterns
-            for (String field : fields) {
-                if (field.contains("Destination port:")) {
-                    int index = field.indexOf(":");
-                    extractedData[4] = field.substring(index + 2);
-                } else if (field.contains("Source port:")) {
-                    int index = field.indexOf(":");
-                    extractedData[2] = field.substring(index + 2);
-                } else if (field.contains("TCP")) {
-                    extractedData[0] = "TCP";
-                } else if (field.contains("UDP")) {
-                    extractedData[0] = "UDP";
-                } else if (field.contains("Destination address:")) {
-                    int index = field.indexOf(":");
-                    extractedData[3] = field.substring(index + 3);
-                } else if (field.contains("Source address:")) {
-                    int index = field.indexOf(":");
-                    extractedData[1] = field.substring(index + 3);
-                } else if (field.contains("Hex stream: ")) {
-                    int index = field.indexOf(":");
-                    String hexStream = field.substring(index + 1).replaceAll(" ", "");
-                    extractedData[7] = HexToAscii.hexToAscii(hexStream);
-                }
-            }
-
-        } catch (Exception e) {
-            logger.error("Error parsing packet fields: {}", e.getMessage());
-            return new String[8]; // Return empty data array if error occurs
-        }
-
-        logger.debug("Extracted data: {}", (Object) extractedData);
-        return extractedData;
+        return extracted;
     }
 
     public static Map<String, String> parsePacket(String packet) {
@@ -92,6 +141,10 @@ public class PacketParser {
         packetData.put("srcMac", extractedData[6]);
 
         // Check if HTTP data exists
+        if(extractedData[4] == null) {
+            System.out.println(packet);
+            return null;
+        }
         if (extractedData[4].contains("(HTTP)")) {
             packetData.put("data", extractedData[7]);
         }
@@ -100,3 +153,4 @@ public class PacketParser {
         return packetData;
     }
 }
+
