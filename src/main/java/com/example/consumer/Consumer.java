@@ -72,8 +72,8 @@ public class Consumer implements ConsumerStrategy {
         //         );
         // }
 
-        // ElasticsearchManager obj = new ElasticsearchManager();
-        // obj.indexUserPacket(user.getUserId(), data);
+        ElasticsearchManager obj = new ElasticsearchManager();
+        obj.indexUserPacket(user.getUserId(), data);
         ParsedData parsedData = new ParsedData(data, alertflag, ruleId);
         engineIds.notifyObservers(parsedData);
     }
