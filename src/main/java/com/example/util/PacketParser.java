@@ -27,28 +27,28 @@ public class PacketParser {
     private static final Pattern PORT_DST_P = Pattern.compile("^\\s*Destination port: (\\d+)");
     private static final Pattern HEX_P      = Pattern.compile("^.*Hex stream:\\s*([0-9A-Fa-f ]+)$");
 
-public static void main(String[] args) {
-        System.out.println( "Hello World!" );
-         try {
-            String mode ="offline";
-            String  source="capture.pcapng";
-            PacketReader reader = PacketReaderFactory.createPacketReader(mode, source);
-            Packet packet;
-            while ((packet = reader.getNextPacket()) != null) {
-                // System.out.println(packet);
-                Map<String, String> packetData = parsePacket(packet.toString());
-                if(packetData == null) {
-                    System.out.println("Failed to parse packet");
-                    break;
-                }
-            //    System.out.println(matcher(packet.toString()));
-                System.out.println(packetData);
-            }
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+// public static void main(String[] args) {
+//         System.out.println( "Hello World!" );
+//          try {
+//             String mode ="offline";
+//             String  source="capture.pcapng";
+//             PacketReader reader = PacketReaderFactory.createPacketReader(mode, source);
+//             Packet packet;
+//             while ((packet = reader.getNextPacket()) != null) {
+//                 // System.out.println(packet);
+//                 Map<String, String> packetData = parsePacket(packet.toString());
+//                 if(packetData == null) {
+//                     System.out.println("Failed to parse packet");
+//                     break;
+//                 }
+//             //    System.out.println(matcher(packet.toString()));
+//                 System.out.println(packetData);
+//             }
+//             reader.close();
+//         } catch (Exception e) {
+//             e.printStackTrace();
+//         }
+//     }
     public static String[] matcher(String packetText) {
         logger.debug("Parsing packet: {}", packetText);
         String[] extracted = new String[8];
@@ -123,7 +123,7 @@ public static void main(String[] args) {
     packetData.put("dstPort", "null");
     packetData.put("dstMac", "null");
     packetData.put("srcMac", "null");
-    packetData.put("payload", "null");
+    // packetData.put("payload", "null");
 
     if (packet == null) {
         logger.warn("Received null packet — returning map with all null values.");
@@ -146,7 +146,7 @@ public static void main(String[] args) {
     if (extractedData[4] != null) packetData.put("dstPort", extractedData[4]);
     if (extractedData[5] != null) packetData.put("dstMac", extractedData[5]);
     if (extractedData[6] != null) packetData.put("srcMac", extractedData[6]);
-    if (extractedData[7] != null) packetData.put("payload", extractedData[7]);
+    // if (extractedData[7] != null) packetData.put("payload", extractedData[7]);
 
     logger.debug("Parsed packet data: {}", packetData);
     return packetData;
