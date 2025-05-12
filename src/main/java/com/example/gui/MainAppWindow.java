@@ -159,11 +159,11 @@ public class MainAppWindow extends JFrame {
                 
         // Tools menu - Updated Analyze Traffic to open NetworkAnalyzer
         JMenu toolsMenu = createMenu("Tools", 
-            new String[]{"Analyze Network", "Network Scan", "Data Management"},
+            new String[]{"Analyze Network", "Network Scan", },
             new ActionListener[]{
-                e -> showNetworkAnalyzer(), 
-                e -> JOptionPane.showMessageDialog(this, "Network Scanner"),
-                e -> JOptionPane.showMessageDialog(this, "Data Management Tool")
+                e -> showNetworkAnalyzer(getTitle()), 
+                e -> showAlertPage(getTitle()),
+                
             });
                 
         // Help menu - Removed Help Contents, kept About
@@ -326,7 +326,7 @@ public class MainAppWindow extends JFrame {
     }
         
     // Method to show the NetworkAnalyzer
-    private void showNetworkAnalyzer() {
+    private void showNetworkAnalyzer(String currentUserId) {
         try {
             NetworkAnalyzer analyzer = new NetworkAnalyzer();
             analyzer.setVisible(true);
@@ -342,6 +342,21 @@ public class MainAppWindow extends JFrame {
             }
         }
     }
+    private void showAlertPage(String currentUserId) {
+        try {
+            AlertPage analyzer = new AlertPage(null);
+            analyzer.setVisible(true);
+        } catch (NoClassDefFoundError | NoSuchMethodError e) {
+            // Fallback if the constructor with JFrame parameter doesn't exist
+            try {
+                AlertPage analyzer = new AlertPage(null);
+                analyzer.setVisible(true);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, 
+                    "Could not open Network Analyzer: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }}
         
     // Dialog method stubs with fallback implementations
         private void showRulesDialog() {

@@ -84,5 +84,10 @@ public class ElasticsearchManager {
     public static void shutdown() throws IOException {
         restClient.close();
     }
+
+    public List<String> searchUserPackets(String currentUserId, String keyword) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'searchUserPackets'");
+    }
 }
 

@@ -56,7 +56,7 @@ public class Consumer implements ConsumerStrategy {
         User user = new User();
         EngineIds engineIds = EngineIds.getInstance();
         Alerts alert = new Alerts();
-        alert.insert(
+       alert.insert(
             parsed.get("protocol"),
             parsed.get("srcMac"),
             parsed.get("srcIp"),

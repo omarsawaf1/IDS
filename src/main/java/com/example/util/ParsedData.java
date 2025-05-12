@@ -25,5 +25,8 @@ public class ParsedData {
     public int getruleid() {
         return ruleid;
     }
+
 }
 
+
+    
