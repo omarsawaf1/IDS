@@ -1,17 +1,7 @@
 package com.example;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Map;
 
-import org.pcap4j.packet.Packet;
 
-import com.example.PacketFactoryPattern.PacketReader;
-import com.example.PacketFactoryPattern.PacketReaderFactory;
-import com.example.concurrent.RuleQueue;
-import com.example.database.ElasticSearch.ElasticsearchManager;
 import com.example.database.mysql.*;
 
 // For testing purposes
@@ -101,22 +91,22 @@ public class App
         // boolean removed = RuleQueue.removeRuleFromQueueById(16);
         // System.out.println("Removed rule: " + removed);
                 // Initialize ElasticsearchManager
-        ElasticsearchManager manager = new ElasticsearchManager();
+        // ElasticsearchManager manager = new ElasticsearchManager();
 
-        // Test indexing a raw packet for a user
-        String rawContent1 = "Packet data 6 for user 6";
-        manager.indexUserPacket(6, rawContent1);
+        // // Test indexing a raw packet for a user
+        // String rawContent1 = "Packet data 6 for user 6";
+        // manager.indexUserPacket(6, rawContent1);
 
-        // Test searching user 1's packets with a keyword
-        List<String> resultsUser1 = manager.searchUserPackets(6, "Packet");
-        System.out.println("Results for user 6:");
-        System.out.println(resultsUser1);
+        // // Test searching user 1's packets with a keyword
+        // List<String> resultsUser1 = manager.searchUserPackets(6, "Packet");
+        // System.out.println("Results for user 6:");
+        // System.out.println(resultsUser1);
 
-        // Shutdown Elasticsearch connection
-        try {
-            ElasticsearchManager.shutdown();
-        } catch (Exception e) {
-            System.err.println("Error shutting down: " + e.getMessage());
-        }
+        // // Shutdown Elasticsearch connection
+        // try {
+        //     ElasticsearchManager.shutdown();
+        // } catch (Exception e) {
+        //     System.err.println("Error shutting down: " + e.getMessage());
+        // }
     }
 }

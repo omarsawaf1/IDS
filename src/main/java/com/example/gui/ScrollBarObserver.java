@@ -2,10 +2,6 @@ package com.example.gui;
 
 import javax.swing.*;
 import com.example.designpatterns.ObserverPattern.Observer;
-import com.example.concurrent.*;
-
-import javax.swing.*;
-import com.example.designpatterns.ObserverPattern.Observer;
 
 public class ScrollBarObserver implements Observer {
     private JTextArea textArea;  // Text area to display the updated message
