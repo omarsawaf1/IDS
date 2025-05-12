@@ -95,7 +95,32 @@ public class ElasticsearchManager {
 
         return results;
     }
+    public String[] printUserData(int userId) {
+        String indexName = "user_" + userId;
+        List<String> results = new ArrayList<>();
 
+        try {
+            if (!indexExists(indexName)) {
+                System.out.println("No index found for user " + userId);
+                return new String[0];
+            }
+
+            SearchResponse<RawPacket> response = client.search(s -> s
+                            .index(indexName)
+                            .query(q -> q.matchAll(m -> m)),
+                    RawPacket.class);
+
+            for (Hit<RawPacket> hit : response.hits().hits()) {
+                String packet = hit.source().getRaw();
+                System.out.println("User " + userId + " Packet: " + packet);
+                results.add(packet);
+            }
+        } catch (Exception e) {
+            System.err.println("Search failed: " + e.getMessage());
+        }
+
+        return results.toArray(new String[0]);
+    }
     public void createPacketIndex() {
         try {
             client.indices().create(c -> c.index("packets")
