@@ -26,6 +26,8 @@ public class NetworkAnalyzer extends JFrame {
     private JFrame parentFrame;
     
     // ElasticsearchManager for searching packets
+    // Add this as a class field near the top with other UI components
+    private JComboBox<String> modeSelector;
     private ElasticsearchManager elasticsearchManager;
     private int currentUserId = 1; // Default user ID, should be set from login
         
@@ -84,54 +86,113 @@ public class NetworkAnalyzer extends JFrame {
     }
         
     private JToolBar createToolbar() {
-        JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
-        toolbar.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-        toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-                
-        startBtn = createButton("Start Capture", ACCENT);
-        stopBtn = createButton("Stop Capture", new Color(200, 60, 60));
-        JButton filterBtn = createButton("Filter", new Color(60, 60, 200));
-        JButton settingsBtn = createButton("toggle theme", new Color(100, 100, 100));
-                
-        stopBtn.setEnabled(false);
-                
-        startBtn.addActionListener(e -> startCapture());
-        stopBtn.addActionListener(e -> stopCapture());
-        filterBtn.addActionListener(e -> showFilterDialog());
-        settingsBtn.addActionListener(e -> toggleTheme());
-                
-        toolbar.add(startBtn);
-        toolbar.add(Box.createRigidArea(new Dimension(5, 0)));
-        toolbar.add(stopBtn);
-        toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
-        toolbar.add(filterBtn);
-        toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
-        toolbar.add(settingsBtn);
-                
-        // Add search field
-        toolbar.add(Box.createHorizontalGlue());
-        JLabel searchLabel = new JLabel("Search: ");
-        searchLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
-                
-        searchField = new JTextField(15);
-        searchField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    searchElasticsearch(searchField.getText());
-                } else {
-                    applySearchFilter(searchField.getText());
-                }
-            }
-        });
-                
-        toolbar.add(searchLabel);
-        toolbar.add(searchField);
-                
-        return toolbar;
+    JToolBar toolbar = new JToolBar();
+    toolbar.setFloatable(false);
+    toolbar.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
+    toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    
+    startBtn = createButton("Start Capture", ACCENT);
+    stopBtn = createButton("Stop Capture", new Color(200, 60, 60));
+    JButton filterBtn = createButton("Filter", new Color(60, 60, 200));
+    JButton settingsBtn = createButton("toggle theme", new Color(100, 100, 100));
+    
+    stopBtn.setEnabled(false);
+    
+    startBtn.addActionListener(e -> startCapture());
+    stopBtn.addActionListener(e -> stopCapture());
+    filterBtn.addActionListener(e -> showFilterDialog());
+    settingsBtn.addActionListener(e -> toggleTheme());
+    
+    // Add mode selector combo box
+    String[] modes = {"Normal Mode", "Live Packet Data"};
+    modeSelector = new JComboBox<>(modes);
+    modeSelector.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
+    modeSelector.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    modeSelector.addActionListener(e -> handleModeChange());
+    
+    // Add label for the mode selector
+    JLabel modeLabel = new JLabel("Capture Mode: ");
+    modeLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    
+    toolbar.add(startBtn);
+    toolbar.add(Box.createRigidArea(new Dimension(5, 0)));
+    toolbar.add(stopBtn);
+    toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
+    
+    // Add mode selector and its label
+    toolbar.add(modeLabel);
+    toolbar.add(modeSelector);
+    toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
+    
+    toolbar.add(filterBtn);
+    toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
+    toolbar.add(settingsBtn);
+    
+    // Add search field
+    toolbar.add(Box.createHorizontalGlue());
+    JLabel searchLabel = new JLabel("Search: ");
+    searchLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    
+    searchField = new JTextField(15);
+    searchField.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyReleased(KeyEvent e) {
+            applySearchFilter(searchField.getText());
+        }
+    });
+    
+    toolbar.add(searchLabel);
+    toolbar.add(searchField);
+    
+    return toolbar;
     }
+    // Add this method to handle mode changes
+private void handleModeChange() {
+    String selectedMode = (String) modeSelector.getSelectedItem();
+    
+    if ("Live Packet Data".equals(selectedMode)) {
+        // Code for Live Packet Data mode
+        statusLabel.setText("Switched to Live Packet Data mode");
         
+        // Empty action listener - you can add your implementation here
+        
+    } else { // Normal Mode
+        // Code for Normal Mode
+        statusLabel.setText("Switched to Normal Mode");
+    }
+        // Empty action listener - you can add your implementation here
+    }
+    private void toggleTheme() {
+    isDarkMode = !isDarkMode;
+    
+    // Update UI colors
+    Color bg = isDarkMode ? DARK_BG : LIGHT_BG;
+    Color panelBg = isDarkMode ? DARK_PANEL : LIGHT_PANEL;
+    Color textColor = isDarkMode ? Color.red : Color.BLACK;
+    
+    getContentPane().setBackground(bg);
+    
+    // Update table
+    packetTable.setBackground(panelBg);
+    packetTable.setForeground(textColor);
+    
+    // Update text areas
+    detailsArea.setBackground(panelBg);
+    detailsArea.setForeground(textColor);
+    hexArea.setBackground(panelBg);
+    hexArea.setForeground(textColor);
+    
+    // Update combo box
+    modeSelector.setBackground(panelBg);
+    modeSelector.setForeground(textColor);
+    
+    // Update status bar
+    statusLabel.setForeground(textColor);
+    packetCountLabel.setForeground(textColor);
+    
+    // Force repaint
+    SwingUtilities.updateComponentTreeUI(this);
+}
     private JButton createButton(String text, Color bgColor) {
         JButton button = new JButton(text);
         button.setBackground(bgColor);
@@ -716,35 +777,7 @@ public class NetworkAnalyzer extends JFrame {
             "About KAOMY",
             JOptionPane.INFORMATION_MESSAGE);
     }
-        
-    private void toggleTheme() {
-        isDarkMode = !isDarkMode;
-                
-        // Update UI colors
-        Color bg = isDarkMode ? DARK_BG : LIGHT_BG;
-        Color panelBg = isDarkMode ? DARK_PANEL : LIGHT_PANEL;
-        Color textColor = isDarkMode ? Color.red : Color.BLACK;
-                
-        getContentPane().setBackground(bg);
-                
-        // Update table
-        packetTable.setBackground(panelBg);
-        packetTable.setForeground(textColor);
-                
-        // Update text areas
-        detailsArea.setBackground(panelBg);
-        detailsArea.setForeground(textColor);
-        hexArea.setBackground(panelBg);
-        hexArea.setForeground(textColor);
-                
-        // Update status bar
-        statusLabel.setForeground(textColor);
-        packetCountLabel.setForeground(textColor);
-                
-        // Force repaint
-        SwingUtilities.updateComponentTreeUI(this);
-    }
-    
+
     // Method to set the current user ID
     public void setCurrentUserId(int userId) {
         this.currentUserId = userId;
