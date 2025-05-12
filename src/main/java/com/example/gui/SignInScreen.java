@@ -82,7 +82,6 @@ public class SignInScreen extends JFrame {
                             
                             // Close this window
                             dispose();
-                            
                             // Open the welcome screen
                             SwingUtilities.invokeLater(() -> {
                             WelcomeScreen2 screen = new WelcomeScreen2();

@@ -27,6 +27,13 @@ public class Consumer implements ConsumerStrategy {
         while (startFlag) {
             try {
                 String data = queue.take(); // block until packet available
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    logger.error("Consumer interrupted", e);
+                    Thread.currentThread().interrupt();
+                }
+                System.out.println(data);
                 boolean alert = false;
                 logger.debug("Processed data: {}", data);
                 Map<Integer, PacketRule> queueRules = RuleQueue.getQueueRules();
@@ -67,11 +74,14 @@ public class Consumer implements ConsumerStrategy {
             user.getUserId(),
             ruleId
         );
-        ElasticsearchManager obj = new ElasticsearchManager();
-        obj.indexUserPacket(user.getUserId(), data);
+        
 
-        engineIds.notifyObservers(new ParsedData(data, parsed, alertflag,ruleId));
-    }
+            ElasticsearchManager obj = new ElasticsearchManager();
+            obj.indexUserPacket(user.getUserId(), data);
+
+            engineIds.notifyObservers(new ParsedData(data, parsed, alertflag, ruleId));
+        }
+    
 
     @Override
     public void stop() {
