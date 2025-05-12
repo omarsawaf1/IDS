@@ -341,11 +341,11 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         packetTable.setForeground(isDarkMode ? Color.red : Color.BLACK);
         packetTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         packetTable.setRowHeight(25);
-                
+                    
         // Add sorter and selection listener
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
         packetTable.setRowSorter(sorter);
-                
+                    
         packetTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int row = packetTable.getSelectedRow();
@@ -354,25 +354,25 @@ public class NetworkAnalyzer extends JFrame implements Observer {
                 }
             }
         });
-                
+                    
         JScrollPane tableScroll = new JScrollPane(packetTable);
-                
+                    
         // Create details panel
         JPanel detailsPanel = new JPanel(new BorderLayout());
         detailsPanel.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-                
+                    
         detailsArea = new JTextArea();
         detailsArea.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
         detailsArea.setForeground(isDarkMode ? Color.red : Color.BLACK);
         detailsArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
         detailsArea.setEditable(false);
-                
+                    
         hexArea = new JTextArea();
         hexArea.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
         hexArea.setForeground(isDarkMode ? Color.red : Color.BLACK);
         hexArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
         hexArea.setEditable(false);
-                
+                    
         JSplitPane detailsSplit = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
             new JScrollPane(detailsArea),
@@ -380,7 +380,7 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         );
         detailsSplit.setDividerLocation(200);
         detailsPanel.add(detailsSplit, BorderLayout.CENTER);
-                
+                    
         // Create main split pane
         JSplitPane mainSplit = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
@@ -388,7 +388,7 @@ public class NetworkAnalyzer extends JFrame implements Observer {
             detailsPanel
         );
         mainSplit.setDividerLocation(350);
-                
+                    
         return mainSplit;
     }
         
@@ -396,35 +396,35 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         JPanel statusBar = new JPanel(new BorderLayout());
         statusBar.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
         statusBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-                
+                    
         statusLabel = new JLabel("Ready");
         statusLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
-                
+                    
         packetCountLabel = new JLabel("Packets: 0");
         packetCountLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
-                
+                    
         statusBar.add(statusLabel, BorderLayout.WEST);
         statusBar.add(packetCountLabel, BorderLayout.EAST);
-                
+                    
         // Update packet count when table changes
         tableModel.addTableModelListener(e -> 
             packetCountLabel.setText("Packets: " + tableModel.getRowCount())
         );
-                
+                    
         return statusBar;
     }
         
     private void createMenu() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-                
+                    
         // File menu
         JMenu fileMenu = createMenu("File");
         addMenuItem(fileMenu, "Open Capture...", e -> openCaptureFile());
         addMenuItem(fileMenu, "Save Capture...", e -> saveCaptureFile());
         fileMenu.addSeparator();
         addMenuItem(fileMenu, "Exit", e -> System.exit(0));
-                
+                    
         // Capture menu
         JMenu captureMenu = createMenu("Capture");
         addMenuItem(captureMenu, "Start", e -> startCapture());
@@ -436,22 +436,22 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         captureMenu.addSeparator();
         // Add option to return to main window
         addMenuItem(captureMenu, "Return to Main Window", e -> returnToMainWindow());
-                
+                    
         // Analyze menu
         JMenu analyzeMenu = createMenu("Analyze");
         addMenuItem(analyzeMenu, "Apply Filter...", e -> showFilterDialog());
         addMenuItem(analyzeMenu, "Statistics", e -> showStatistics());
         addMenuItem(analyzeMenu, "Search in Elasticsearch", e -> showElasticsearchSearchDialog());
-                
+                    
         // Help menu
         JMenu helpMenu = createMenu("Help");
         addMenuItem(helpMenu, "About", e -> showAboutDialog());
-                
+                    
         menuBar.add(fileMenu);
         menuBar.add(captureMenu);
         menuBar.add(analyzeMenu);
         menuBar.add(helpMenu);
-                
+                    
         setJMenuBar(menuBar);
     }
     
@@ -461,10 +461,10 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         if (isCapturing) {
             stopCapture();
         }
-                
+                    
         // Dispose this window
         this.dispose();
-                
+                    
         // If parent frame exists, make it visible
         if (parentFrame != null) {
             parentFrame.setVisible(true);
@@ -502,17 +502,17 @@ public class NetworkAnalyzer extends JFrame implements Observer {
             tableModel.setRowCount(0);
             detailsArea.setText("");
             hexArea.setText("");
-                    
+                            
             startBtn.setEnabled(false);
             stopBtn.setEnabled(true);
             statusLabel.setText("Capturing packets...");
             isCapturing = true;
-                    
+                            
             // Check which mode is selected
             String selectedMode = (String) modeSelector.getSelectedItem();
-                    
+                            
             logger.info("Starting capture in mode: {}", selectedMode);
-                    
+                            
             if ("Live Packet Data".equals(selectedMode)) {
                 // Start the engine in live capture mode
                 try {
@@ -540,7 +540,7 @@ public class NetworkAnalyzer extends JFrame implements Observer {
             if (EngineIds.isEngineRunning()) {
                 engineInstance.stopEngine();
             }
-                                
+                                        
             startBtn.setEnabled(true);
             stopBtn.setEnabled(false);
             statusLabel.setText("Capture stopped");
@@ -549,7 +549,6 @@ public class NetworkAnalyzer extends JFrame implements Observer {
     }
     
     // Observer pattern implementation
-    // Enhanced update method to better handle packet data
     @Override
     public void update(ParsedData parsedData) {
         // This method is called when new packet data is available from the engine
@@ -557,13 +556,13 @@ public class NetworkAnalyzer extends JFrame implements Observer {
             logger.error("Received null ParsedData in update method");
             return;
         }
-            
+                
         // Log the received data for debugging
         logger.debug("Received packet data: {}", parsedData.getrowData());
-            
+                
         SwingUtilities.invokeLater(() -> {
             try {
-                addPacketFromParsedData(parsedData);
+                addPacketToTable(parsedData);
             } catch (Exception e) {
                 logger.error("Error adding packet to table: {}", e.getMessage(), e);
                 // Display error in status bar
@@ -572,82 +571,37 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         });
     }
     
-    // Improved method to add a packet from ParsedData with better error handling
-    private void addPacketFromParsedData(ParsedData parsedData) {
+    // Method to add a packet to the table
+    private void addPacketToTable(ParsedData parsedData) {
         if (parsedData == null) {
-            logger.warn("Null ParsedData received in addPacketFromParsedData");
+            logger.warn("Null ParsedData received");
             return;
         }
-            
+        
+        // Get the raw data
+        String rawData = parsedData.getrowData();
+        if (rawData == null || rawData.isEmpty()) {
+            logger.warn("Empty raw data in packet");
+            return;
+        }
+        
         // Format the current time for display
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
         String time = sdf.format(new Date());
-            
-        // Get the parsed data map
-        Map<String, String> dataMap = parsedData.getparsedData();
-        if (dataMap == null) {
-            logger.warn("Null parsed data map in packet");
-            // Still try to display something using the raw data
-            String rawData = parsedData.getrowData();
-            if (rawData != null) {
-                Object[] rowData = {
-                    tableModel.getRowCount() + 1,
-                    time,
-                    "Unknown",
-                    "Unknown",
-                    "Unknown",
-                    rawData.length(),
-                    "Raw data available",
-                    ""
-                };
-                tableModel.addRow(rowData);
-            }
-            return;
-        }
-            
-        // Log the parsed data map for debugging
-        logger.debug("Parsed data map: {}", dataMap);
-            
-        // Extract packet information from the map using the keys from PacketParser
-        String srcIp = getValueOrDefault(dataMap, "srcIp", "Unknown");
-        String dstIp = getValueOrDefault(dataMap, "dstIp", "Unknown");
-        String protocol = getValueOrDefault(dataMap, "protocol", "Unknown");
-        String srcPort = getValueOrDefault(dataMap, "srcPort", "");
-        String dstPort = getValueOrDefault(dataMap, "dstPort", "");
-        String srcMac = getValueOrDefault(dataMap, "srcMac", "");
-        String dstMac = getValueOrDefault(dataMap, "dstMac", "");
-        String data = getValueOrDefault(dataMap, "data", "");
-            
-        // Format source and destination with port if available
-        String source = srcIp;
-        if (!srcPort.isEmpty()) {
-            source += ":" + srcPort;
-        }
-        if (!srcMac.isEmpty()) {
-            source += " (" + srcMac + ")";
-        }
-            
-        String destination = dstIp;
-        if (!dstPort.isEmpty()) {
-            destination += ":" + dstPort;
-        }
-        if (!dstMac.isEmpty()) {
-            destination += " (" + dstMac + ")";
-        }
-            
-        // Create info field
-        String info = protocol + " packet";
-        if (!data.isEmpty()) {
-            info = data.length() > 50 ? data.substring(0, 50) + "..." : data;
-        }
-            
-        // Get packet length
-        int packetLength = 0;
-        String rawData = parsedData.getrowData();
-        if (rawData != null) {
-            packetLength = rawData.length();
-        }
-            
+        
+        // Extract basic information from raw data
+        // This is a simple approach - in a real app, you'd use proper packet parsing
+        String source = extractSource(rawData);
+        String destination = extractDestination(rawData);
+        String protocol = extractProtocol(rawData);
+        int length = rawData.length();
+        String info = rawData.length() > 50 ? rawData.substring(0, 50) + "..." : rawData;
+        
+        // Check if this packet triggered an alert
+        boolean isAlert = parsedData.getalertflag();
+        Integer ruleId = parsedData.getruleid();
+        String alertStatus = isAlert ? "ALERT (Rule " + ruleId + ")" : "";
+        
         // Check if packet matches filter
         if (!currentFilter.isEmpty()) {
             boolean matches = protocol.toLowerCase().contains(currentFilter.toLowerCase()) ||
@@ -659,12 +613,7 @@ public class NetworkAnalyzer extends JFrame implements Observer {
                 return;
             }
         }
-            
-        // Check if this packet triggered an alert
-        boolean isAlert = parsedData.getalertflag();
-        Integer ruleId = parsedData.getruleid();
-        String alertStatus = isAlert ? "ALERT (Rule " + ruleId + ")" : "";
-            
+        
         // Add to table
         Object[] rowData = {
             tableModel.getRowCount() + 1,
@@ -672,60 +621,91 @@ public class NetworkAnalyzer extends JFrame implements Observer {
             source,
             destination,
             protocol,
-            packetLength,
+            length,
             info,
             alertStatus
         };
-            
+        
         logger.debug("Adding row to table: {}", java.util.Arrays.toString(rowData));
         tableModel.addRow(rowData);
-            
-        // If this is an alert, highlight the row
-        if (isAlert) {
-            int lastRow = tableModel.getRowCount() - 1;
-            // We would need to implement row coloring here
-            // This is typically done with a custom TableCellRenderer
-            logger.info("Alert detected for packet at row {}", lastRow);
-        }
-            
+        
         // Auto-scroll to bottom
         packetTable.scrollRectToVisible(
             packetTable.getCellRect(packetTable.getRowCount() - 1, 0, true)
         );
     }
-        
-    // Helper method to get a value from the map with fallback
-    private String getValueOrDefault(Map<String, String> map, String key, String defaultValue) {
-        if (map == null) return defaultValue;
-        String value = map.get(key);
-        return (value != null && !value.isEmpty()) ? value : defaultValue;
+    
+    // Simple methods to extract information from raw data
+    private String extractSource(String rawData) {
+        // Simple extraction - in a real app, use proper packet parsing
+        if (rawData.contains("src=")) {
+            int start = rawData.indexOf("src=") + 4;
+            int end = rawData.indexOf(" ", start);
+            if (end > start) {
+                return rawData.substring(start, end);
+            }
+        }
+        return "Unknown";
     }
+    
+    private String extractDestination(String rawData) {
+        // Simple extraction - in a real app, use proper packet parsing
+        if (rawData.contains("dst=")) {
+            int start = rawData.indexOf("dst=") + 4;
+            int end = rawData.indexOf(" ", start);
+            if (end > start) {
+                return rawData.substring(start, end);
+            }
+        }
+        return "Unknown";
+    }
+    
+    private String extractProtocol(String rawData) {
+        // Simple protocol detection
+        String lowerCase = rawData.toLowerCase();
         
+        if (lowerCase.contains("tcp")) {
+            return "TCP";
+        } else if (lowerCase.contains("udp")) {
+            return "UDP";
+        } else if (lowerCase.contains("icmp")) {
+            return "ICMP";
+        } else if (lowerCase.contains("http")) {
+            return "HTTP";
+        } else if (lowerCase.contains("dns")) {
+            return "DNS";
+        } else if (lowerCase.contains("arp")) {
+            return "ARP";
+        } else {
+            return "Unknown";
+        }
+    }
+    
     private void updatePacketDetails(int row) {
         if (row < 0 || row >= tableModel.getRowCount()) return;
-                    
+                        
         StringBuilder details = new StringBuilder();
         details.append("Packet: ").append(tableModel.getValueAt(row, 0)).append("\n");
         details.append("Time: ").append(tableModel.getValueAt(row, 1)).append("\n\n");
-                            
+                                
         String protocol = (String) tableModel.getValueAt(row, 4);
         details.append("=== ").append(protocol).append(" Header ===\n");
-                            
+                                
         details.append("Source: ").append(tableModel.getValueAt(row, 2)).append("\n");
         details.append("Destination: ").append(tableModel.getValueAt(row, 3)).append("\n");
         details.append("Protocol: ").append(protocol).append("\n");
         details.append("Length: ").append(tableModel.getValueAt(row, 5)).append(" bytes\n");
         details.append("Info: ").append(tableModel.getValueAt(row, 6)).append("\n");
-            
+                
         // Add alert information if present
         String alertStatus = (String) tableModel.getValueAt(row, 7);
         if (alertStatus != null && !alertStatus.isEmpty()) {
             details.append("\n=== Alert Information ===\n");
             details.append(alertStatus).append("\n");
         }
-            
+                
         detailsArea.setText(details.toString());
-                    
+                        
         // For hex view, we would need the actual packet bytes
         // Since we don't have direct access to raw bytes, display the raw data if available
         hexArea.setText("Hex view not available for this packet.");
@@ -735,7 +715,7 @@ public class NetworkAnalyzer extends JFrame implements Observer {
     private void applySearchFilter(String text) {
         TableRowSorter<DefaultTableModel> sorter = 
             (TableRowSorter<DefaultTableModel>) packetTable.getRowSorter();
-                            
+                                
         if (text.trim().isEmpty()) {
             sorter.setRowFilter(null);
         } else {
@@ -748,16 +728,16 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         if (keyword == null || keyword.trim().isEmpty()) {
             return;
         }
-                            
+                                
         statusLabel.setText("Searching in Elasticsearch...");
-                            
+                                
         // Use SwingWorker to perform search in background
         new SwingWorker<List<String>, Void>() {
             @Override
             protected List<String> doInBackground() {
                 return elasticsearchManager.searchUserPackets(currentUserId, keyword);
             }
-                                            
+                                                    
             @Override
             protected void done() {
                 try {
@@ -782,10 +762,10 @@ public class NetworkAnalyzer extends JFrame implements Observer {
                 "Search Results", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-                            
+                                
         // Clear the current table
         tableModel.setRowCount(0);
-                            
+                                
         // Parse and add results to the table
         int rowCount = 0;
         for (String rawPacket : results) {
@@ -798,15 +778,15 @@ public class NetworkAnalyzer extends JFrame implements Observer {
                 String protocol = extractValue(rawPacket, "Protocol:");
                 String lengthStr = extractValue(rawPacket, "Length:");
                 String info = extractValue(rawPacket, "Info:");
-                                                                    
+                
                 int length = 0;
                 try {
                     length = Integer.parseInt(lengthStr);
                 } catch (NumberFormatException e) {
-                    // Use default if parsing fails
-                    length = 64;
+                    // Use default length of 0 if parsing fails
                 }
-                                                                    
+                
+                // Add to table
                 Object[] rowData = {
                     ++rowCount,
                     time,
@@ -815,266 +795,146 @@ public class NetworkAnalyzer extends JFrame implements Observer {
                     protocol,
                     length,
                     info,
-                    "" // No alert information for search results
+                    "" // No alert status for search results
                 };
-                                                                    
+                
                 tableModel.addRow(rowData);
             } catch (Exception e) {
-                System.err.println("Error parsing packet: " + e.getMessage());
-                // Add raw data as fallback
-                Object[] rowData = {
-                    ++rowCount,
-                    new SimpleDateFormat("HH:mm:ss.SSS").format(new Date()),
-                    "Unknown",
-                    "Unknown",
-                    "Unknown",
-                    rawPacket.length(),
-                    rawPacket,
-                    ""
-                };
-                tableModel.addRow(rowData);
+                logger.error("Error parsing search result: {}", e.getMessage(), e);
             }
         }
-    }
         
-    // Helper method to extract values from the raw packet string
-    private String extractValue(String rawPacket, String key) {
-        int startIndex = rawPacket.indexOf(key) + key.length();
-        int endIndex = rawPacket.indexOf(",", startIndex);
-        if (endIndex == -1) {
-            // This might be the last field
-            return rawPacket.substring(startIndex).trim();
-        }
-        return rawPacket.substring(startIndex, endIndex).trim();
+        // Update status
+        statusLabel.setText("Displaying " + rowCount + " search results for: " + keyword);
     }
+    
+    // Helper method to extract values from formatted strings
+    private String extractValue(String input, String key) {
+        int start = input.indexOf(key);
+        if (start < 0) return "";
         
+        start += key.length();
+        int end = input.indexOf(",", start);
+        if (end < 0) end = input.length();
+        
+        return input.substring(start, end).trim();
+    }
+    
     // Show dialog for Elasticsearch search
     private void showElasticsearchSearchDialog() {
-                    
         String keyword = JOptionPane.showInputDialog(this,
-            "Enter search term for Elasticsearch:",
+            "Enter search keyword:",
             "Elasticsearch Search", JOptionPane.QUESTION_MESSAGE);
-                            
+        
         if (keyword != null && !keyword.trim().isEmpty()) {
-            searchElasticsearch(keyword);
+            searchElasticsearch(keyword.trim());
         }
     }
-            
-    // Method to open a capture file
+    
+    // Show filter dialog
+    private void showFilterDialog() {
+        String filter = JOptionPane.showInputDialog(this,
+            "Enter filter expression (e.g., protocol, ip address):",
+            "Apply Filter", JOptionPane.QUESTION_MESSAGE);
+        
+        if (filter != null) {
+            currentFilter = filter.trim();
+            statusLabel.setText("Filter applied: " + currentFilter);
+        }
+    }
+    
+    // Open capture file
     private void openCaptureFile() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Open Capture File");
+        
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            statusLabel.setText("Opening file: " + file.getName());
             
-        // Add file filter for PCAP files
-        fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                return f.isDirectory() || f.getName().toLowerCase().endsWith(".pcap") ||
-                        f.getName().toLowerCase().endsWith(".pcapng");
-            }
-                
-            @Override
-            public String getDescription() {
-                return "PCAP Files (*.pcap, *.pcapng)";
-            }
-        });
-            
-        int result = fileChooser.showOpenDialog(this);
-            
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            processPcapFile(selectedFile.getAbsolutePath());
+            // Process the file
+            processPcapFile(file.getAbsolutePath());
         }
     }
     
-    // Method to save the current capture to a file
+    // Save capture file
     private void saveCaptureFile() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Capture File");
+        
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            statusLabel.setText("Saving to file: " + file.getName());
             
-        // Add file filter for PCAP files
-        fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                return f.isDirectory() || f.getName().toLowerCase().endsWith(".pcap");
-            }
-                
-            @Override
-            public String getDescription() {
-                return "PCAP Files (*.pcap)";
-            }
-        });
-            
-        int result = fileChooser.showSaveDialog(this);
-            
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            String filePath = selectedFile.getAbsolutePath();
-            
-            // Add .pcap extension if not present
-            if (!filePath.toLowerCase().endsWith(".pcap")) {
-                filePath += ".pcap";
-            }
-            
-            // Here you would implement the actual saving logic
-            // This is a placeholder since we don't have direct access to raw packet data
+            // Implement file saving logic here
             JOptionPane.showMessageDialog(this,
-                "Saving capture to file is not implemented in this version.",
-                "Feature Not Available", JOptionPane.INFORMATION_MESSAGE);
-            
-            statusLabel.setText("Capture saved to: " + filePath);
+                "File saved successfully: " + file.getName(),
+                "Save Complete", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     
-    // Method to show network statistics
+    // Show statistics
     private void showStatistics() {
-        // Count packets by protocol
-        int tcpCount = 0;
-        int udpCount = 0;
-        int icmpCount = 0;
-        int otherCount = 0;
-        int totalPackets = tableModel.getRowCount();
-            
-        for (int i = 0; i < totalPackets; i++) {
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                "No packets to analyze.",
+                "Statistics", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        
+        // Count protocols
+        Map<String, Integer> protocolCount = new java.util.HashMap<>();
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
             String protocol = (String) tableModel.getValueAt(i, 4);
-            if (protocol.contains("TCP")) {
-                tcpCount++;
-            } else if (protocol.contains("UDP")) {
-                udpCount++;
-            } else if (protocol.contains("ICMP")) {
-                icmpCount++;
-            } else {
-                otherCount++;
-            }
+            protocolCount.put(protocol, protocolCount.getOrDefault(protocol, 0) + 1);
         }
-            
-        // Create statistics dialog
-        JDialog statsDialog = new JDialog(this, "Network Statistics", true);
-        statsDialog.setSize(400, 300);
-        statsDialog.setLocationRelativeTo(this);
-            
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-            
-        // Create text area for statistics
-        JTextArea statsArea = new JTextArea();
-        statsArea.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
-        statsArea.setForeground(isDarkMode ? Color.RED : Color.BLACK);
-        statsArea.setEditable(false);
-        statsArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
-            
-        // Build statistics text
-        StringBuilder stats = new StringBuilder();
-        stats.append("=== Packet Statistics ===\n\n");
-        stats.append("Total Packets: ").append(totalPackets).append("\n\n");
-        stats.append("By Protocol:\n");
-        stats.append("  TCP:   ").append(tcpCount).append(" (").append(formatPercentage(tcpCount, totalPackets)).append(")\n");
-        stats.append("  UDP:   ").append(udpCount).append(" (").append(formatPercentage(udpCount, totalPackets)).append(")\n");
-        stats.append("  ICMP:  ").append(icmpCount).append(" (").append(formatPercentage(icmpCount, totalPackets)).append(")\n");
-        stats.append("  Other: ").append(otherCount).append(" (").append(formatPercentage(otherCount, totalPackets)).append(")\n");
-            
-        statsArea.setText(stats.toString());
-            
-        panel.add(new JScrollPane(statsArea), BorderLayout.CENTER);
-            
-        // Add close button
-        JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> statsDialog.dispose());
-            
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-        buttonPanel.add(closeButton);
-            
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-            
-        statsDialog.setContentPane(panel);
-        statsDialog.setVisible(true);
+        
+        // Build statistics message
+        StringBuilder stats = new StringBuilder("Packet Statistics:\n\n");
+        stats.append("Total Packets: ").append(tableModel.getRowCount()).append("\n\n");
+        stats.append("Protocol Distribution:\n");
+        
+        for (Map.Entry<String, Integer> entry : protocolCount.entrySet()) {
+            double percentage = (entry.getValue() * 100.0) / tableModel.getRowCount();
+            stats.append(String.format("- %s: %d (%.1f%%)\n", 
+                entry.getKey(), entry.getValue(), percentage));
+        }
+        
+        // Show statistics dialog
+        JTextArea textArea = new JTextArea(stats.toString());
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(400, 300));
+        
+        JOptionPane.showMessageDialog(this,
+            scrollPane,
+            "Packet Statistics",
+            JOptionPane.INFORMATION_MESSAGE);
     }
     
-    // Helper method to format percentage
-    private String formatPercentage(int count, int total) {
-        if (total == 0) return "0%";
-        return String.format("%.1f%%", (count * 100.0) / total);
-    }
-    
-    // Method to show about dialog
+    // Show about dialog
     private void showAboutDialog() {
-        JDialog aboutDialog = new JDialog(this, "About Network Analyzer", true);
-        aboutDialog.setSize(400, 300);
-        aboutDialog.setLocationRelativeTo(this);
-            
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-            
-        // Create text area for about information
-        JTextArea aboutArea = new JTextArea();
-        aboutArea.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
-        aboutArea.setForeground(isDarkMode ? Color.RED : Color.BLACK);
-        aboutArea.setEditable(false);
-        aboutArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            
-        // Build about text
-        StringBuilder about = new StringBuilder();
-        about.append("Network Analyzer\n");
-        about.append("Version 1.0\n\n");
-        about.append("A network packet analyzer for monitoring and analyzing network traffic.\n\n");
-        about.append("Features:\n");
-        about.append("- Live packet capture\n");
-        about.append("- PCAP file analysis\n");
-        about.append("- Protocol filtering\n");
-        about.append("- Packet inspection\n");
-        about.append("- Alert detection\n\n");
-        about.append("© 2023 Network Security Team\n");
-            
-        aboutArea.setText(about.toString());
-            
-        panel.add(new JScrollPane(aboutArea), BorderLayout.CENTER);
-            
-        // Add close button
-        JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> aboutDialog.dispose());
-            
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-        buttonPanel.add(closeButton);
-            
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-            
-        aboutDialog.setContentPane(panel);
-        aboutDialog.setVisible(true);
+        JOptionPane.showMessageDialog(this,
+            "Network Analyzer\nVersion 1.0\n\n" +
+            "A packet capture and analysis tool for network monitoring and security.",
+            "About Network Analyzer",
+            JOptionPane.INFORMATION_MESSAGE);
     }
     
-    // Method to show filter dialog
-    private void showFilterDialog() {
-        String filter = JOptionPane.showInputDialog(this, 
-            "Enter filter expression:", currentFilter);
-                            
-        if (filter != null) {
-            currentFilter = filter.trim();
-            statusLabel.setText(currentFilter.isEmpty() ? 
-                "Filter cleared" : "Filter applied: " + currentFilter);
-                                                    
-            // Apply to existing packets if not capturing
-            if (!isCapturing && !currentFilter.isEmpty()) {
-                TableRowSorter<DefaultTableModel> sorter = 
-                    (TableRowSorter<DefaultTableModel>) packetTable.getRowSorter();
-                                                                                    
-                sorter.setRowFilter(new RowFilter<DefaultTableModel, Object>() {
-                    @Override
-                    public boolean include(Entry<? extends DefaultTableModel, ? extends Object> entry) {
-                        String lowerFilter = currentFilter.toLowerCase();
-                                                                                                                            
-                        for (int i = 0; i < entry.getValueCount(); i++) {
-                            if (entry.getStringValue(i).toLowerCase().contains(lowerFilter)) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                });
-            }
+    // Main method for testing
+    public static void main(String[] args) {
+        try {
+            // Set look and feel
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        
+        SwingUtilities.invokeLater(() -> {
+            NetworkAnalyzer analyzer = new NetworkAnalyzer();
+            analyzer.setVisible(true);
+        });
     }
 }

@@ -6,9 +6,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import javax.sound.sampled.*;
+import java.io.InputStream;
 
 public class WelcomeScreen extends JFrame {
-
     // Animation components
     private Timer pulseTimer;
     private Timer fadeInTimer;
@@ -22,6 +23,8 @@ public class WelcomeScreen extends JFrame {
     private JLabel welcomeText;
     private JButton continueBtn;
     private Color glowColor = new Color(255, 0, 0, 100);
+    // Sound effect
+    private Clip dragonRoarClip;
 
     public WelcomeScreen() {
         setTitle("Welcome to Kaomi Intrusion Detection");
@@ -30,6 +33,9 @@ public class WelcomeScreen extends JFrame {
         setLocationRelativeTo(null);
         setUndecorated(true); // Remove window decorations for a sleeker look
         setBackground(new Color(0, 0, 0, 0)); // Transparent background
+
+        // Load dragon roar sound
+        loadDragonRoarSound();
 
         // Create a rounded panel for the content
         JPanel mainPanel = new RoundedPanel(20, new Color(10, 10, 10, 240));
@@ -59,14 +65,11 @@ public class WelcomeScreen extends JFrame {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
                 // Set transparency
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-
                 // Draw glow effect
                 int centerX = getWidth() / 2;
                 int centerY = getHeight() / 2;
-
                 // Draw pulsing glow
                 int glowSize = (int)(200 * pulseSize);
                 RadialGradientPaint glow = new RadialGradientPaint(
@@ -80,17 +83,15 @@ public class WelcomeScreen extends JFrame {
                 );
                 g2d.setPaint(glow);
                 g2d.fillOval(centerX - glowSize, centerY - glowSize, glowSize * 2, glowSize * 2);
-
                 // Draw rotating logo
                 if (logoImage != null) {
                     AffineTransform transform = new AffineTransform();
                     transform.translate(centerX, centerY);
-                    transform.rotate(angle);
+                    transform.rotate(-angle); // Negative angle for opposite direction
                     transform.scale(pulseSize, pulseSize);
                     transform.translate(-logoImage.getWidth() / 2, -logoImage.getHeight() / 2);
                     g2d.drawImage(logoImage, transform, null);
                 }
-
                 g2d.dispose();
             }
         };
@@ -116,7 +117,6 @@ public class WelcomeScreen extends JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
                 // Create gradient background
                 GradientPaint gradient = new GradientPaint(
                         0, 0, new Color(120, 0, 0),
@@ -124,13 +124,11 @@ public class WelcomeScreen extends JFrame {
                 );
                 g2d.setPaint(gradient);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-
                 // Draw glow effect on hover
                 if (getModel().isRollover()) {
                     g2d.setColor(new Color(255, 50, 50, 50));
                     g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 }
-
                 // Draw text
                 g2d.setColor(Color.WHITE);
                 g2d.setFont(getFont());
@@ -139,7 +137,6 @@ public class WelcomeScreen extends JFrame {
                 int textHeight = fm.getHeight();
                 g2d.drawString(getText(), (getWidth() - textWidth) / 2,
                         (getHeight() + textHeight / 2) / 2);
-
                 g2d.dispose();
             }
         };
@@ -153,13 +150,13 @@ public class WelcomeScreen extends JFrame {
         continueBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         continueBtn.setPreferredSize(new Dimension(220, 50));
 
-        // Add hover effect
+        // Add hover effect with dragon roar sound
         continueBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 pulseDirection = 2; // Increase pulse speed on hover
+                playDragonRoar(); // Play dragon roar on hover
             }
-
             @Override
             public void mouseExited(MouseEvent e) {
                 pulseDirection = 1; // Return to normal pulse speed
@@ -170,7 +167,6 @@ public class WelcomeScreen extends JFrame {
             // Start fade-out animation
             Timer fadeOutTimer = new Timer(20, new ActionListener() {
                 float fadeOut = 1.0f;
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     fadeOut -= 0.05f;
@@ -180,7 +176,6 @@ public class WelcomeScreen extends JFrame {
                         dispose();
                         new SignInScreen();
                     }
-
                     // Apply fade out to all components
                     mainPanel.setBackground(new Color(10, 10, 10, (int)(fadeOut * 240)));
                     welcomeText.setForeground(new Color(255, 0, 0, (int)(fadeOut * 255)));
@@ -190,7 +185,6 @@ public class WelcomeScreen extends JFrame {
                 }
             });
             fadeOutTimer.start();
-
             // Stop other animations
             pulseTimer.stop();
             logoSpinTimer.stop();
@@ -200,7 +194,6 @@ public class WelcomeScreen extends JFrame {
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.add(tagline, BorderLayout.NORTH);
-
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         btnPanel.setOpaque(false);
         btnPanel.add(continueBtn);
@@ -224,6 +217,26 @@ public class WelcomeScreen extends JFrame {
         setVisible(true);
     }
 
+    private void loadDragonRoarSound() {
+        try {
+            InputStream soundStream = getClass().getResourceAsStream("/dragonroar.wav");
+            if (soundStream != null) {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundStream);
+                dragonRoarClip = AudioSystem.getClip();
+                dragonRoarClip.open(audioStream);
+            }
+        } catch (Exception e) {
+            System.err.println("Could not load dragon roar sound: " + e.getMessage());
+        }
+    }
+
+    private void playDragonRoar() {
+        if (dragonRoarClip != null && !dragonRoarClip.isRunning()) {
+            dragonRoarClip.setFramePosition(0);
+            dragonRoarClip.start();
+        }
+    }
+
     private void startAnimations(JLabel tagline, JLabel versionLabel) {
         // Fade-in animation
         fadeInTimer = new Timer(40, new ActionListener() {
@@ -234,17 +247,14 @@ public class WelcomeScreen extends JFrame {
                     alpha = 1.0f;
                     fadeInTimer.stop();
                 }
-
                 // Fade in text elements with delay
                 if (alpha > 0.3f) {
                     welcomeText.setForeground(new Color(255, 0, 0, Math.min(255, (int)((alpha - 0.3f) * 1.5f * 255))));
                 }
-
                 if (alpha > 0.5f) {
                     tagline.setForeground(new Color(200, 200, 200, Math.min(255, (int)((alpha - 0.5f) * 2f * 255))));
                     versionLabel.setForeground(new Color(100, 100, 100, Math.min(255, (int)((alpha - 0.5f) * 2f * 255))));
                 }
-
                 animationPanel.repaint();
             }
         });
@@ -265,7 +275,7 @@ public class WelcomeScreen extends JFrame {
             }
         });
 
-        // Logo spin animation
+        // Logo spin animation (counter-clockwise)
         logoSpinTimer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -286,7 +296,6 @@ public class WelcomeScreen extends JFrame {
     private void addWindowDragCapability() {
         // Allow dragging the window
         Point dragPoint = new Point();
-
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -294,7 +303,6 @@ public class WelcomeScreen extends JFrame {
                 dragPoint.y = e.getY();
             }
         });
-
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -309,29 +317,24 @@ public class WelcomeScreen extends JFrame {
     private class RoundedPanel extends JPanel {
         private int cornerRadius;
         private Color backgroundColor;
-
         public RoundedPanel(int radius, Color bgColor) {
             super();
             this.cornerRadius = radius;
             this.backgroundColor = bgColor;
             setOpaque(false);
         }
-
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
             // Draw background with rounded corners
-            g2d.setColor(backgroundColor);
+                     g2d.setColor(backgroundColor);
             g2d.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
-
             // Add subtle border
             g2d.setColor(new Color(70, 0, 0));
             g2d.setStroke(new BasicStroke(2f));
             g2d.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, cornerRadius, cornerRadius);
-
             g2d.dispose();
         }
     }
@@ -343,8 +346,8 @@ public class WelcomeScreen extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         // Use SwingUtilities to ensure thread safety
         SwingUtilities.invokeLater(() -> new WelcomeScreen());
     }
 }
+
