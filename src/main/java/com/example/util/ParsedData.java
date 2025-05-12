@@ -12,6 +12,7 @@ public class ParsedData {
         this.rowData = rowData;
         this.parsedData = parsedData;
         this.alertflag = alertflag;
+        this.ruleid = ruleid;
     }
     public String getrowData() {
         return this.rowData;

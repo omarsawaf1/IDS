@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.example.designpatterns.StrategyPattern.ConsumerStrategy;
 import com.example.engine.EngineIds;
 import com.example.database.mysql.User;
-import com.example.util.PacketRule;
+import com.example.util.*;
 import com.example.concurrent.RuleQueue;
 import com.example.database.mysql.Alerts;
 import com.example.util.PacketParser;
@@ -27,18 +27,11 @@ public class Consumer implements ConsumerStrategy {
         while (startFlag) {
             try {
                 String data = queue.take(); // block until packet available
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    logger.error("Consumer interrupted", e);
-                    Thread.currentThread().interrupt();
-                }
-                System.out.println(data);
                 boolean alert = false;
                 logger.debug("Processed data: {}", data);
                 Map<Integer, PacketRule> queueRules = RuleQueue.getQueueRules();
                 Map<String, String> parsed = PacketParser.parsePacket(data);
-
+                System.out.println(parsed);
                 if (parsed == null) continue; // skip invalid packets
                 for (Map.Entry<Integer, PacketRule> entry : queueRules.entrySet()) {
                     ruleId = entry.getKey();
@@ -63,24 +56,26 @@ public class Consumer implements ConsumerStrategy {
         User user = new User();
         EngineIds engineIds = EngineIds.getInstance();
         Alerts alert = new Alerts();
-       alert.insert(
-            parsed.get("protocol"),
-            parsed.get("srcMac"),
-            parsed.get("srcIp"),
-            parsed.get("srcPort"),
-            parsed.get("dstMac"),
-            parsed.get("dstIp"),
-            parsed.get("dstPort"),
-            user.getUserId(),
-            ruleId
-        );
-        
-
-            ElasticsearchManager obj = new ElasticsearchManager();
-            obj.indexUserPacket(user.getUserId(), data);
-
-            engineIds.notifyObservers(new ParsedData(data, parsed, alertflag, ruleId));
+        if(alertflag){
+            alert.insert(
+                    parsed.get("protocol"),
+                    parsed.get("srcMac"),
+                    parsed.get("srcIp"),
+                    parsed.get("srcPort"),
+                    parsed.get("dstMac"),
+                    parsed.get("dstIp"),
+                    parsed.get("dstPort"),
+                    user.getUserId(),
+                    ruleId
+                );
         }
+
+            // ElasticsearchManager obj = new ElasticsearchManager();
+            // obj.indexUserPacket(user.getUserId(), data);
+            ParsedData parsedData = new ParsedData(data, parsed, alertflag, ruleId);
+            // engineIds.notifyObservers(parsedData);
+            System.out.println("hello world");
+    }
     
 
     @Override
