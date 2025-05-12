@@ -26,13 +26,17 @@ public class EngineIds implements Subject {
         return instance;
     }
 
-    // public  void startEngine() {
-    //     engineFlagRunning = true;
-    //     this.producerConsumer = new ProducerConsumer(new Consumer() , new ProducerLive());
-    //     PoolManager.EngineIds().submit(() -> producerConsumer.runConsumer());
-    //     PoolManager.EngineIds().submit(() -> producerConsumer.runProducer());
+    public  void startEngine() {
+        engineFlagRunning = true;
+        try {
+            this.producerConsumer = new ProducerConsumer(new Consumer() , new ProducerLive("172.0.0.1"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        PoolManager.EngineIds().submit(() -> producerConsumer.runConsumer());
+        PoolManager.EngineIds().submit(() -> producerConsumer.runProducer());
 
-    // }
+    }
     public void startEngine(String filePath) {
         engineFlagRunning = true;
         try {
