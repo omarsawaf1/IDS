@@ -29,7 +29,7 @@ public class AlertPage extends JFrame implements Observer {
     private final Color DARK_PANEL = new Color(50, 50, 50);
     private final Color LIGHT_BG = new Color(240, 240, 240);
     private final Color LIGHT_PANEL = new Color(255, 255, 255);
-    private final Color ACCENT = new Color(0, 120, 215);
+    // private final Color ACCENT = new Color(0, 120, 215);
     private boolean isDarkMode = true;
     
     // Constructor with parent frame parameter

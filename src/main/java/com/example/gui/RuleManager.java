@@ -166,7 +166,6 @@ public class RuleManager {
     }
 
     public Rule showDialog() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'showDialog'");
     }
 }

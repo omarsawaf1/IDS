@@ -4,8 +4,8 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
-import co.elastic.clients.elasticsearch.indices.ExistsRequest;
+// import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
+// import co.elastic.clients.elasticsearch.indices.ExistsRequest;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -71,7 +71,10 @@ public class ElasticsearchManager {
             );
 
             for (Hit<RawPacket> hit : response.hits().hits()) {
-                results.add(hit.source().getRaw());
+                RawPacket source = hit.source();
+                if (source != null) {
+                results.add(source.getRaw());
+                }
             }
 
         } catch (Exception e) {
@@ -86,7 +89,6 @@ public class ElasticsearchManager {
     }
 
     public List<String> searchUserPackets(String currentUserId, String keyword) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'searchUserPackets'");
     }
 }

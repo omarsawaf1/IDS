@@ -24,7 +24,7 @@ public class Rule {
     
     public Rule(boolean enabled, String action2, String protocol2, String sourceMac, String sourceIp, String sourcePort,
             String destMac, String destIp, String destPort, String description2) {
-        //TODO Auto-generated constructor stub
+       
     }
 
     public int getId() {
