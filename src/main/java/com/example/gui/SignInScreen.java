@@ -84,7 +84,10 @@ public class SignInScreen extends JFrame {
                             dispose();
                             
                             // Open the welcome screen
-                            SwingUtilities.invokeLater(() -> new WelcomeScreen2());
+                            SwingUtilities.invokeLater(() -> {
+                            WelcomeScreen2 screen = new WelcomeScreen2();
+                            screen.setVisible(true); // Make sure this is called
+                             });
                             
                             // You can add additional actions here after successful login
                             // For example: load user preferences, set up session, etc.
