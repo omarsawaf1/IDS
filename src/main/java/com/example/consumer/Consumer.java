@@ -44,6 +44,7 @@ public class Consumer implements ConsumerStrategy {
                         break;
                     }
                 }
+                compute(data, ruleId, alert);
                 System.out.println(count++);
             } catch (InterruptedException e) {
                 logger.error("Consumer interrupted", e);
@@ -53,36 +54,29 @@ public class Consumer implements ConsumerStrategy {
         logger.info("Consumer stopped.");
     }
 
-    public void compute(String data, Map<String, String> parsed, Integer ruleId, boolean alertflag) {
+    public void compute(String data, Integer ruleId, boolean alertflag) {
         User user = new User();
         EngineIds engineIds = EngineIds.getInstance();
         Alerts alert = new Alerts();
-        if(alertflag){
-            alert.insert(
-                    parsed.get("protocol"),
-                    parsed.get("srcMac"),
-                    parsed.get("srcIp"),
-                    parsed.get("srcPort"),
-                    parsed.get("dstMac"),
-                    parsed.get("dstIp"),
-                    parsed.get("dstPort"),
-                    user.getUserId(),
-                    ruleId
-                );
-        }
+        // if(alertflag){
+        //     alert.insert(
+        //             parsed.get("protocol"),
+        //             parsed.get("srcMac"),
+        //             parsed.get("srcIp"),
+        //             parsed.get("srcPort"),
+        //             parsed.get("dstMac"),
+        //             parsed.get("dstIp"),
+        //             parsed.get("dstPort"),
+        //             user.getUserId(),
+        //             ruleId
+        //         );
+        // }
 
-            // ElasticsearchManager obj = new ElasticsearchManager();
-            // obj.indexUserPacket(user.getUserId(), data);
-            try{
-
-                ParsedData parsedData = new ParsedData(data, alertflag, ruleId);
-            }catch(Exception e){
-                System.out.println(e);
-            }
-            // engineIds.notifyObservers(parsedData);
-            System.out.println(data);
+        // ElasticsearchManager obj = new ElasticsearchManager();
+        // obj.indexUserPacket(user.getUserId(), data);
+        ParsedData parsedData = new ParsedData(data, alertflag, ruleId);
+        engineIds.notifyObservers(parsedData);
     }
-    
 
     @Override
     public void stop() {
@@ -90,5 +84,4 @@ public class Consumer implements ConsumerStrategy {
         logger.info("Consumer stop requested.");
     }
 }
-
 
