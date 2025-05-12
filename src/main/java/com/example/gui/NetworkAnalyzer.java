@@ -332,65 +332,7 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         return button;
     }
         
-    private JSplitPane createMainContent() {
-        // Create packet table
-        String[] columns = {"No.", "Time", "Source", "Destination", "Protocol", "Length", "Info", "Alert"};
-        tableModel = new DefaultTableModel(columns, 0);
-        packetTable = new JTable(tableModel);
-        packetTable.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
-        packetTable.setForeground(isDarkMode ? Color.red : Color.BLACK);
-        packetTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        packetTable.setRowHeight(25);
-                    
-        // Add sorter and selection listener
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
-        packetTable.setRowSorter(sorter);
-                    
-        packetTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int row = packetTable.getSelectedRow();
-                if (row >= 0) {
-                    updatePacketDetails(packetTable.convertRowIndexToModel(row));
-                }
-            }
-        });
-                    
-        JScrollPane tableScroll = new JScrollPane(packetTable);
-                    
-        // Create details panel
-        JPanel detailsPanel = new JPanel(new BorderLayout());
-        detailsPanel.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-                    
-        detailsArea = new JTextArea();
-        detailsArea.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
-        detailsArea.setForeground(isDarkMode ? Color.red : Color.BLACK);
-        detailsArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        detailsArea.setEditable(false);
-                    
-        hexArea = new JTextArea();
-        hexArea.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
-        hexArea.setForeground(isDarkMode ? Color.red : Color.BLACK);
-        hexArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        hexArea.setEditable(false);
-                    
-        JSplitPane detailsSplit = new JSplitPane(
-            JSplitPane.VERTICAL_SPLIT,
-            new JScrollPane(detailsArea),
-            new JScrollPane(hexArea)
-        );
-        detailsSplit.setDividerLocation(200);
-        detailsPanel.add(detailsSplit, BorderLayout.CENTER);
-                    
-        // Create main split pane
-        JSplitPane mainSplit = new JSplitPane(
-            JSplitPane.VERTICAL_SPLIT,
-            tableScroll,
-            detailsPanel
-        );
-        mainSplit.setDividerLocation(350);
-                    
-        return mainSplit;
-    }
+   
         
     private JPanel createStatusBar() {
         JPanel statusBar = new JPanel(new BorderLayout());
@@ -572,68 +514,75 @@ public class NetworkAnalyzer extends JFrame implements Observer {
     }
     
     // Method to add a packet to the table
-    private void addPacketToTable(ParsedData parsedData) {
-        if (parsedData == null) {
-            logger.warn("Null ParsedData received");
-            return;
-        }
-        
-        // Get the raw data
-        String rawData = parsedData.getrowData();
-        if (rawData == null || rawData.isEmpty()) {
-            logger.warn("Empty raw data in packet");
-            return;
-        }
-        
-        // Format the current time for display
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-        String time = sdf.format(new Date());
-        
-        // Extract basic information from raw data
-        // This is a simple approach - in a real app, you'd use proper packet parsing
-        String source = extractSource(rawData);
-        String destination = extractDestination(rawData);
-        String protocol = extractProtocol(rawData);
-        int length = rawData.length();
-        String info = rawData.length() > 50 ? rawData.substring(0, 50) + "..." : rawData;
-        
-        // Check if this packet triggered an alert
-        boolean isAlert = parsedData.getalertflag();
-        Integer ruleId = parsedData.getruleid();
-        String alertStatus = isAlert ? "ALERT (Rule " + ruleId + ")" : "";
-        
-        // Check if packet matches filter
-        if (!currentFilter.isEmpty()) {
-            boolean matches = protocol.toLowerCase().contains(currentFilter.toLowerCase()) ||
-                            source.toLowerCase().contains(currentFilter.toLowerCase()) ||
-                            destination.toLowerCase().contains(currentFilter.toLowerCase()) ||
-                            info.toLowerCase().contains(currentFilter.toLowerCase());
-            if (!matches) {
-                logger.debug("Packet filtered out by current filter: {}", currentFilter);
-                return;
-            }
-        }
-        
-        // Add to table
-        Object[] rowData = {
-            tableModel.getRowCount() + 1,
-            time,
-            source,
-            destination,
-            protocol,
-            length,
-            info,
-            alertStatus
-        };
-        
-        logger.debug("Adding row to table: {}", java.util.Arrays.toString(rowData));
-        tableModel.addRow(rowData);
-        
-        // Auto-scroll to bottom
-        packetTable.scrollRectToVisible(
-            packetTable.getCellRect(packetTable.getRowCount() - 1, 0, true)
-        );
+   
+private void addPacketToTable(ParsedData parsedData) {
+    if (parsedData == null) {
+        logger.warn("Null ParsedData received");
+        return;
     }
+    
+    // Get the raw data
+    String rawData = parsedData.getrowData();
+    if (rawData == null || rawData.isEmpty()) {
+        logger.warn("Empty raw data in packet");
+        return;
+    }
+    
+    // Format the current time for display
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+    String time = sdf.format(new Date());
+    
+    // Extract basic information from raw data
+    String source = extractSource(rawData);
+    String destination = extractDestination(rawData);
+    String protocol = extractProtocol(rawData);
+    int length = rawData.length();
+    
+    // For the info column, show a truncated version of the raw data
+    String info = rawData.length() > 50 ? rawData.substring(0, 50) + "..." : rawData;
+    
+    // Check if this packet triggered an alert
+    boolean isAlert = parsedData.getalertflag();
+    Integer ruleId = parsedData.getruleid();
+    String alertStatus = isAlert ? "ALERT (Rule " + ruleId + ")" : "";
+    
+    // Check if packet matches filter
+    if (!currentFilter.isEmpty()) {
+        boolean matches = protocol.toLowerCase().contains(currentFilter.toLowerCase()) ||
+                        source.toLowerCase().contains(currentFilter.toLowerCase()) ||
+                        destination.toLowerCase().contains(currentFilter.toLowerCase()) ||
+                        info.toLowerCase().contains(currentFilter.toLowerCase());
+        if (!matches) {
+            logger.debug("Packet filtered out by current filter: {}", currentFilter);
+            return;
+        }
+    }
+    
+    // Add to table
+    Object[] rowData = {
+        tableModel.getRowCount() + 1,
+        time,
+        source,
+        destination,
+        protocol,
+        length,
+        info,
+        alertStatus
+    };
+    
+    logger.debug("Adding row to table: {}", java.util.Arrays.toString(rowData));
+    tableModel.addRow(rowData);
+    
+    // Auto-scroll to bottom
+    packetTable.scrollRectToVisible(
+        packetTable.getCellRect(packetTable.getRowCount() - 1, 0, true)
+    );
+    
+    // Store the full raw data for later retrieval
+    // In a real implementation, you might want to store this in a map
+    // For example: fullPacketDataMap.put((Integer)rowData[0], rawData);
+}
+
     
     // Simple methods to extract information from raw data
     private String extractSource(String rawData) {
@@ -681,35 +630,7 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         }
     }
     
-    private void updatePacketDetails(int row) {
-        if (row < 0 || row >= tableModel.getRowCount()) return;
-                        
-        StringBuilder details = new StringBuilder();
-        details.append("Packet: ").append(tableModel.getValueAt(row, 0)).append("\n");
-        details.append("Time: ").append(tableModel.getValueAt(row, 1)).append("\n\n");
-                                
-        String protocol = (String) tableModel.getValueAt(row, 4);
-        details.append("=== ").append(protocol).append(" Header ===\n");
-                                
-        details.append("Source: ").append(tableModel.getValueAt(row, 2)).append("\n");
-        details.append("Destination: ").append(tableModel.getValueAt(row, 3)).append("\n");
-        details.append("Protocol: ").append(protocol).append("\n");
-        details.append("Length: ").append(tableModel.getValueAt(row, 5)).append(" bytes\n");
-        details.append("Info: ").append(tableModel.getValueAt(row, 6)).append("\n");
-                
-        // Add alert information if present
-        String alertStatus = (String) tableModel.getValueAt(row, 7);
-        if (alertStatus != null && !alertStatus.isEmpty()) {
-            details.append("\n=== Alert Information ===\n");
-            details.append(alertStatus).append("\n");
-        }
-                
-        detailsArea.setText(details.toString());
-                        
-        // For hex view, we would need the actual packet bytes
-        // Since we don't have direct access to raw bytes, display the raw data if available
-        hexArea.setText("Hex view not available for this packet.");
-    }
+    
         
     // Regular search filter for the table
     private void applySearchFilter(String text) {
@@ -755,58 +676,7 @@ public class NetworkAnalyzer extends JFrame implements Observer {
     }
         
     // Display Elasticsearch search results
-    private void displayElasticsearchResults(List<String> results, String keyword) {
-        if (results.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "No results found for: " + keyword,
-                "Search Results", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-                                
-        // Clear the current table
-        tableModel.setRowCount(0);
-                                
-        // Parse and add results to the table
-        int rowCount = 0;
-        for (String rawPacket : results) {
-            try {
-                // Parse the raw packet string
-                // Format: "Time: %s, Source: %s, Destination: %s, Protocol: %s, Length: %d, Info: %s"
-                String time = extractValue(rawPacket, "Time:");
-                String source = extractValue(rawPacket, "Source:");
-                String destination = extractValue(rawPacket, "Destination:");
-                String protocol = extractValue(rawPacket, "Protocol:");
-                String lengthStr = extractValue(rawPacket, "Length:");
-                String info = extractValue(rawPacket, "Info:");
-                
-                int length = 0;
-                try {
-                    length = Integer.parseInt(lengthStr);
-                } catch (NumberFormatException e) {
-                    // Use default length of 0 if parsing fails
-                }
-                
-                // Add to table
-                Object[] rowData = {
-                    ++rowCount,
-                    time,
-                    source,
-                    destination,
-                    protocol,
-                    length,
-                    info,
-                    "" // No alert status for search results
-                };
-                
-                tableModel.addRow(rowData);
-            } catch (Exception e) {
-                logger.error("Error parsing search result: {}", e.getMessage(), e);
-            }
-        }
-        
-        // Update status
-        statusLabel.setText("Displaying " + rowCount + " search results for: " + keyword);
-    }
+   
     
     // Helper method to extract values from formatted strings
     private String extractValue(String input, String key) {
@@ -819,6 +689,204 @@ public class NetworkAnalyzer extends JFrame implements Observer {
         
         return input.substring(start, end).trim();
     }
+
+
+    // Update the updatePacketDetails method to display raw data in the hex area
+private void updatePacketDetails(int row) {
+    if (row < 0 || row >= tableModel.getRowCount()) return;
+                
+    StringBuilder details = new StringBuilder();
+    details.append("Packet: ").append(tableModel.getValueAt(row, 0)).append("\n");
+    details.append("Time: ").append(tableModel.getValueAt(row, 1)).append("\n\n");
+                        
+    String protocol = (String) tableModel.getValueAt(row, 4);
+    details.append("=== ").append(protocol).append(" Header ===\n");
+                        
+    details.append("Source: ").append(tableModel.getValueAt(row, 2)).append("\n");
+    details.append("Destination: ").append(tableModel.getValueAt(row, 3)).append("\n");
+    details.append("Protocol: ").append(protocol).append("\n");
+    details.append("Length: ").append(tableModel.getValueAt(row, 5)).append(" bytes\n");
+    details.append("Info: ").append(tableModel.getValueAt(row, 6)).append("\n");
+        
+    // Add alert information if present
+    String alertStatus = (String) tableModel.getValueAt(row, 7);
+    if (alertStatus != null && !alertStatus.isEmpty()) {
+        details.append("\n=== Alert Information ===\n");
+        details.append(alertStatus).append("\n");
+    }
+        
+    detailsArea.setText(details.toString());
+        
+    // Display the raw data in the hex area
+    // Get the raw data from the Info column (which contains the first part of raw data)
+    String info = (String) tableModel.getValueAt(row, 6);
+    String rawData = info;
+    
+    // If the info was truncated (ends with "..."), try to get the full raw data
+    if (info.endsWith("...")) {
+        // This is where you would retrieve the full raw data
+        // For now, we'll just display what we have
+        rawData = "Raw Packet Data:\n\n" + info;
+        
+        // In a real implementation, you would retrieve the full raw data from your data store
+        // For example, if you store the full raw data in a map indexed by packet number:
+        // int packetNum = (Integer) tableModel.getValueAt(row, 0);
+        // rawData = fullPacketDataMap.get(packetNum);
+    }
+    
+    hexArea.setText(rawData);
+}
+
+// Update the addPacketToTable method to store the full raw data
+// Update the displayElasticsearchResults method to show raw data
+private void displayElasticsearchResults(List<String> results, String keyword) {
+    if (results.isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+            "No results found for: " + keyword,
+            "Search Results", JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+    
+    // Clear the current table
+    tableModel.setRowCount(0);
+    
+    // Parse and add results to the table
+    int rowCount = 0;
+    for (String rawPacket : results) {
+        try {
+            // For Elasticsearch results, we'll just use the raw packet data directly
+            
+            // Format the current time for display (use current time since we don't have the original)
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+            String time = sdf.format(new Date());
+            
+            // Extract basic information from raw data
+            String source = extractSource(rawPacket);
+            String destination = extractDestination(rawPacket);
+            String protocol = extractProtocol(rawPacket);
+            int length = rawPacket.length();
+            
+            // For the info column, show a truncated version of the raw data
+            String info = rawPacket.length() > 50 ? rawPacket.substring(0, 50) + "..." : rawPacket;
+            
+            // Add to table
+            Object[] rowData = {
+                ++rowCount,
+                time,
+                source,
+                destination,
+                protocol,
+                length,
+                info,
+                "" // No alert status for search results
+            };
+            
+            tableModel.addRow(rowData);
+            
+            // Store the full raw data for later retrieval
+            // In a real implementation, you might want to store this in a map
+            // For example: fullPacketDataMap.put((Integer)rowData[0], rawPacket);
+        } catch (Exception e) {
+            logger.error("Error parsing search result: {}", e.getMessage(), e);
+        }
+    }
+    
+    // Update status
+    statusLabel.setText("Displaying " + rowCount + " search results for: " + keyword);
+}
+
+// Update the createMainContent method to better label the panels
+private JSplitPane createMainContent() {
+    // Create packet table
+    String[] columns = {"No.", "Time", "Source", "Destination", "Protocol", "Length", "Info", "Alert"};
+    tableModel = new DefaultTableModel(columns, 0);
+    packetTable = new JTable(tableModel);
+    packetTable.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
+    packetTable.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    packetTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    packetTable.setRowHeight(25);
+                
+    // Add sorter and selection listener
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+    packetTable.setRowSorter(sorter);
+                
+    packetTable.getSelectionModel().addListSelectionListener(e -> {
+        if (!e.getValueIsAdjusting()) {
+            int row = packetTable.getSelectedRow();
+            if (row >= 0) {
+                updatePacketDetails(packetTable.convertRowIndexToModel(row));
+            }
+        }
+    });
+                
+    JScrollPane tableScroll = new JScrollPane(packetTable);
+    
+    // Add a title to the table panel
+    JPanel tablePanel = new JPanel(new BorderLayout());
+    tablePanel.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
+    JLabel tableTitle = new JLabel("Packet List");
+    tableTitle.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    tableTitle.setFont(new Font("Arial", Font.BOLD, 14));
+    tableTitle.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 0));
+    tablePanel.add(tableTitle, BorderLayout.NORTH);
+    tablePanel.add(tableScroll, BorderLayout.CENTER);
+                
+    // Create details panel
+    JPanel detailsPanel = new JPanel(new BorderLayout());
+    detailsPanel.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
+    
+    // Add titles to the details and raw data panels
+    JLabel detailsTitle = new JLabel("Packet Details");
+    detailsTitle.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    detailsTitle.setFont(new Font("Arial", Font.BOLD, 14));
+    detailsTitle.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 0));
+    
+    JLabel rawDataTitle = new JLabel("Raw Packet Data");
+    rawDataTitle.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    rawDataTitle.setFont(new Font("Arial", Font.BOLD, 14));
+    rawDataTitle.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 0));
+                
+    detailsArea = new JTextArea();
+    detailsArea.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
+    detailsArea.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    detailsArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+    detailsArea.setEditable(false);
+    
+    JPanel detailsWithTitle = new JPanel(new BorderLayout());
+    detailsWithTitle.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
+    detailsWithTitle.add(detailsTitle, BorderLayout.NORTH);
+    detailsWithTitle.add(new JScrollPane(detailsArea), BorderLayout.CENTER);
+                
+    hexArea = new JTextArea();
+    hexArea.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
+    hexArea.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    hexArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+    hexArea.setEditable(false);
+    
+    JPanel hexWithTitle = new JPanel(new BorderLayout());
+    hexWithTitle.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
+    hexWithTitle.add(rawDataTitle, BorderLayout.NORTH);
+    hexWithTitle.add(new JScrollPane(hexArea), BorderLayout.CENTER);
+                
+    JSplitPane detailsSplit = new JSplitPane(
+        JSplitPane.VERTICAL_SPLIT,
+        detailsWithTitle,
+        hexWithTitle
+    );
+    detailsSplit.setDividerLocation(200);
+    detailsPanel.add(detailsSplit, BorderLayout.CENTER);
+                
+    // Create main split pane
+    JSplitPane mainSplit = new JSplitPane(
+        JSplitPane.VERTICAL_SPLIT,
+        tablePanel,
+        detailsPanel
+    );
+    mainSplit.setDividerLocation(350);
+                
+    return mainSplit;
+}
+
     
     // Show dialog for Elasticsearch search
     private void showElasticsearchSearchDialog() {
