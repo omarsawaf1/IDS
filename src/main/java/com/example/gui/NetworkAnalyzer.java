@@ -50,26 +50,30 @@ private AlertPage alertPage;
     private boolean isDarkMode = true;
     
     // Constructor with parent frame parameter
-    public NetworkAnalyzer(JFrame parent) {
-        this.parentFrame = parent;
-        setTitle("Network Analyzer");
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(parent);
-        
-        // Initialize ElasticsearchManager
-        elasticsearchManager = new ElasticsearchManager();
-        
-        // Get the engine instance
-        engineInstance = EngineIds.getInstance();
-        
-        // Register this class as an observer
-        engineInstance.addObserver(this);
-        logger.info("NetworkAnalyzer initialized and registered as observer");
-        
-        initUI();
-        createMenu();
-    }
+  public NetworkAnalyzer(JFrame parent) {
+    this.parentFrame = parent;
+    setTitle("Network Analyzer");
+    setSize(1200, 700);
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    setLocationRelativeTo(parent);
+            
+    // Initialize ElasticsearchManager
+    elasticsearchManager = new ElasticsearchManager();
+            
+    // Get the engine instance
+    engineInstance = EngineIds.getInstance();
+            
+    // Register this class as an observer
+    engineInstance.addObserver(this);
+    logger.info("NetworkAnalyzer initialized and registered as observer");
+    
+    // Initialize the AlertPage but keep it hidden
+    alertPage = new AlertPage(this, currentUserId);
+    alertPage.setVisible(false);
+            
+    initUI();
+    createMenu();
+}
     
     // Constructor with parent frame and user ID
     public NetworkAnalyzer(JFrame parent, int userId) {
@@ -99,67 +103,107 @@ private AlertPage alertPage;
         add(statusBar, BorderLayout.SOUTH);
     }
         
-    private JToolBar createToolbar() {
-        JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
-        toolbar.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
-        toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        
-        startBtn = createButton("Start Capture", ACCENT);
-        stopBtn = createButton("Stop Capture", new Color(200, 60, 60));
-        JButton filterBtn = createButton("Filter", new Color(60, 60, 200));
-        JButton settingsBtn = createButton("toggle theme", new Color(100, 100, 100));
-        
-        stopBtn.setEnabled(false);
-        
-        startBtn.addActionListener(e -> startCapture());
-        stopBtn.addActionListener(e -> stopCapture());
-        filterBtn.addActionListener(e -> showFilterDialog());
-        settingsBtn.addActionListener(e -> toggleTheme());
-        
-        // Add mode selector combo box
-        String[] modes = {"Normal Mode", "Live Packet Data"};
-        modeSelector = new JComboBox<>(modes);
-        modeSelector.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
-        modeSelector.setForeground(isDarkMode ? Color.red : Color.BLACK);
-        modeSelector.addActionListener(e -> handleModeChange());
-        
-        // Add label for the mode selector
-        JLabel modeLabel = new JLabel("Capture Mode: ");
-        modeLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
-        
-        toolbar.add(startBtn);
-        toolbar.add(Box.createRigidArea(new Dimension(5, 0)));
-        toolbar.add(stopBtn);
-        toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
-        
-        // Add mode selector and its label
-        toolbar.add(modeLabel);
-        toolbar.add(modeSelector);
-        toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
-        
-        toolbar.add(filterBtn);
-        toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
-        toolbar.add(settingsBtn);
-        
-        // Add search field
-        toolbar.add(Box.createHorizontalGlue());
-        JLabel searchLabel = new JLabel("Search: ");
-        searchLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
-        
-        searchField = new JTextField(15);
-        searchField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                applySearchFilter(searchField.getText());
-            }
-        });
-        
-        toolbar.add(searchLabel);
-        toolbar.add(searchField);
-        
-        return toolbar;
+
+// Modify your createToolbar method to include the alert page button
+private JToolBar createToolbar() {
+    JToolBar toolbar = new JToolBar();
+    toolbar.setFloatable(false);
+    toolbar.setBackground(isDarkMode ? DARK_BG : LIGHT_BG);
+    toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            
+    startBtn = createButton("Start Capture", ACCENT);
+    stopBtn = createButton("Stop Capture", new Color(200, 60, 60));
+    JButton filterBtn = createButton("Filter", new Color(60, 60, 200));
+    JButton settingsBtn = createButton("toggle theme", new Color(100, 100, 100));
+    
+    // Add button for Alert Page
+    alertPageBtn = createButton("Alerts", new Color(255, 140, 0)); // Orange color for alerts
+    alertPageBtn.addActionListener(e -> openAlertPage());
+    
+    
+            
+    stopBtn.setEnabled(false);
+            
+    startBtn.addActionListener(e -> startCapture());
+    stopBtn.addActionListener(e -> stopCapture());
+    filterBtn.addActionListener(e -> showFilterDialog());
+    settingsBtn.addActionListener(e -> toggleTheme());
+            
+    // Add mode selector combo box
+    String[] modes = {"Normal Mode", "Live Packet Data"};
+    modeSelector = new JComboBox<>(modes);
+    modeSelector.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
+    modeSelector.setForeground(isDarkMode ? Color.red : Color.BLACK);
+    modeSelector.addActionListener(e -> handleModeChange());
+            
+    // Add label for the mode selector
+    JLabel modeLabel = new JLabel("Capture Mode: ");
+    modeLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
+            
+    toolbar.add(startBtn);
+    toolbar.add(Box.createRigidArea(new Dimension(5, 0)));
+    toolbar.add(stopBtn);
+    toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
+            
+    // Add mode selector and its label
+    toolbar.add(modeLabel);
+    toolbar.add(modeSelector);
+    toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
+            
+    toolbar.add(filterBtn);
+    toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
+    toolbar.add(settingsBtn);
+    
+    // Add alert and rules buttons
+    toolbar.add(Box.createRigidArea(new Dimension(15, 0)));
+    toolbar.add(alertPageBtn);
+    toolbar.add(Box.createRigidArea(new Dimension(5, 0)));
+            
+    // Add search field
+    toolbar.add(Box.createHorizontalGlue());
+    JLabel searchLabel = new JLabel("Search: ");
+    searchLabel.setForeground(isDarkMode ? Color.red : Color.BLACK);
+            
+    searchField = new JTextField(15);
+    searchField.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyReleased(KeyEvent e) {
+            applySearchFilter(searchField.getText());
+        }
+    });
+            
+    toolbar.add(searchLabel);
+    toolbar.add(searchField);
+            
+    return toolbar;
+}
+
+// Add this method to handle opening the AlertPage
+private void openAlertPage() {
+    if (alertPage == null) {
+        // Create the AlertPage if it doesn't exist yet
+        alertPage = new AlertPage(this, currentUserId);
     }
+    
+    // Make the AlertPage visible
+    alertPage.setVisible(true);
+    
+    // Optionally, you can hide the NetworkAnalyzer window
+    // this.setVisible(false);
+}
+
+// Add this method to handle opening the RulesPage (if you want to keep this functionality)
+private void openRulesPage() {
+    // Implement the rules page opening logic here
+    JOptionPane.showMessageDialog(this, 
+        "Rules management functionality will be implemented here.", 
+        "Rules Page", 
+        JOptionPane.INFORMATION_MESSAGE);
+}
+
+// Modify the constructor to initialize the AlertPage but keep it hidden
+
+
     
     // Handle mode changes
     private void handleModeChange() {
