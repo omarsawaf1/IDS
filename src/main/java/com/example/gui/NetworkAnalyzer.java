@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -147,6 +148,7 @@ public class NetworkAnalyzer extends JFrame {
     return toolbar;
     }
     // Add this method to handle mode changes
+// Modify the handleModeChange method to show a popup when Normal Mode is selected
 private void handleModeChange() {
     String selectedMode = (String) modeSelector.getSelectedItem();
     
@@ -154,14 +156,191 @@ private void handleModeChange() {
         // Code for Live Packet Data mode
         statusLabel.setText("Switched to Live Packet Data mode");
         
-        // Empty action listener - you can add your implementation here
-        
     } else { // Normal Mode
-        // Code for Normal Mode
-        statusLabel.setText("Switched to Normal Mode");
+        // Show popup for file selection
+        showFileSelectionPopup();
     }
-        // Empty action listener - you can add your implementation here
+}
+
+// Add this new method to show the file selection popup
+private void showFileSelectionPopup() {
+    JPopupMenu fileMenu = new JPopupMenu();
+    
+    // Set background and foreground colors based on theme
+    fileMenu.setBackground(isDarkMode ? DARK_PANEL : LIGHT_PANEL);
+    
+    // Option to upload a file
+    JMenuItem uploadItem = new JMenuItem("Upload PCAP File");
+    uploadItem.setForeground(isDarkMode ? Color.RED : Color.BLACK);
+    uploadItem.addActionListener(e -> selectPcapFile());
+    
+    // Option to specify a file path
+    JMenuItem pathItem = new JMenuItem("Enter File Path");
+    pathItem.setForeground(isDarkMode ? Color.RED : Color.BLACK);
+    pathItem.addActionListener(e -> enterFilePath());
+    
+    // Option to cancel
+    JMenuItem cancelItem = new JMenuItem("Cancel");
+    cancelItem.setForeground(isDarkMode ? Color.RED : Color.BLACK);
+    cancelItem.addActionListener(e -> {
+        // If user cancels, switch back to Live Packet Data
+        modeSelector.setSelectedItem("Live Packet Data");
+    });
+    
+    // Add items to the popup menu
+    fileMenu.add(uploadItem);
+    fileMenu.add(pathItem);
+    fileMenu.addSeparator();
+    fileMenu.add(cancelItem);
+    
+    // Show the popup near the mode selector
+    fileMenu.show(modeSelector, 0, modeSelector.getHeight());
+}
+
+// Method to handle file selection via file chooser
+private void selectPcapFile() {
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Select PCAP File");
+    
+    // Add file filter for PCAP files
+    fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+        @Override
+        public boolean accept(File f) {
+            return f.isDirectory() || f.getName().toLowerCase().endsWith(".pcap") || 
+                   f.getName().toLowerCase().endsWith(".pcapng");
+        }
+        
+        @Override
+        public String getDescription() {
+            return "PCAP Files (*.pcap, *.pcapng)";
+        }
+    });
+    
+    int result = fileChooser.showOpenDialog(this);
+    
+    if (result == JFileChooser.APPROVE_OPTION) {
+        File selectedFile = fileChooser.getSelectedFile();
+        processPcapFile(selectedFile.getAbsolutePath());
+    } else {
+        // If user cancels, switch back to Live Packet Data
+        modeSelector.setSelectedItem("Live Packet Data");
     }
+}
+
+// Method to handle file path entry
+private void enterFilePath() {
+    String path = JOptionPane.showInputDialog(this, 
+        "Enter the full path to the PCAP file:",
+        "PCAP File Path", JOptionPane.QUESTION_MESSAGE);
+    
+    if (path != null && !path.trim().isEmpty()) {
+        File file = new File(path.trim());
+        if (file.exists() && file.isFile()) {
+            processPcapFile(path.trim());
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "The specified file does not exist or is not a valid file.",
+                "Invalid File Path", JOptionPane.ERROR_MESSAGE);
+            // Switch back to Live Packet Data
+            modeSelector.setSelectedItem("Live Packet Data");
+        }
+    } else {
+        // If user cancels, switch back to Live Packet Data
+        modeSelector.setSelectedItem("Live Packet Data");
+    }
+}
+
+// Method to process the selected PCAP file
+private void processPcapFile(String filePath) {
+    statusLabel.setText("Processing file: " + filePath);
+    
+    // Clear existing data
+    tableModel.setRowCount(0);
+    detailsArea.setText("");
+    hexArea.setText("");
+    
+    // Use SwingWorker to load the file in the background
+    new SwingWorker<Boolean, Object[]>() {
+        @Override
+        protected Boolean doInBackground() {
+            try {
+                // This is where you would actually parse the PCAP file
+                // For now, we'll simulate loading with random data
+                
+                // Simulate file processing time
+                Thread.sleep(1000);
+                
+                // Generate some sample packets based on the filename
+                Random random = new Random(filePath.hashCode());
+                int packetCount = 50 + random.nextInt(100);
+                
+                for (int i = 0; i < packetCount; i++) {
+                    // Simulate packet data
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+                    String time = sdf.format(new Date(System.currentTimeMillis() - (packetCount - i) * 1000));
+                    
+                    String[] protocols = {"TCP", "UDP", "HTTP", "DNS", "ICMP", "ARP", "HTTPS"};
+                    String protocol = protocols[random.nextInt(protocols.length)];
+                    
+                    String source = "192.168." + random.nextInt(256) + "." + random.nextInt(256);
+                    String destination = "10.0." + random.nextInt(256) + "." + random.nextInt(256);
+                    int length = 64 + random.nextInt(1400);
+                    String info = generatePacketInfo(protocol);
+                    
+                    Object[] rowData = {
+                        i + 1,
+                        time,
+                        source,
+                        destination,
+                        protocol,
+                        length,
+                        info
+                    };
+                    
+                    publish(rowData);
+                    
+                    // Slow down a bit to simulate loading
+                    if (i % 10 == 0) {
+                        Thread.sleep(100);
+                    }
+                }
+                
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        
+        @Override
+        protected void process(List<Object[]> chunks) {
+            // Add packets to the table as they're processed
+            for (Object[] rowData : chunks) {
+                tableModel.addRow(rowData);
+            }
+        }
+        
+        @Override
+        protected void done() {
+            try {
+                if (get()) {
+                    statusLabel.setText("File loaded successfully: " + filePath);
+                } else {
+                    statusLabel.setText("Error loading file");
+                    JOptionPane.showMessageDialog(NetworkAnalyzer.this,
+                        "Error processing PCAP file. The file may be corrupted or in an unsupported format.",
+                        "File Processing Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                statusLabel.setText("Error loading file: " + e.getMessage());
+                JOptionPane.showMessageDialog(NetworkAnalyzer.this,
+                    "Error: " + e.getMessage(),
+                    "File Processing Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }.execute();
+}
+
     private void toggleTheme() {
     isDarkMode = !isDarkMode;
     
