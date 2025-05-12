@@ -27,6 +27,13 @@ public class Consumer implements ConsumerStrategy {
         while (startFlag) {
             try {
                 String data = queue.take(); // block until packet available
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    logger.error("Consumer interrupted", e);
+                    Thread.currentThread().interrupt();
+                }
+                System.out.println(data);
                 boolean alert = false;
                 logger.debug("Processed data: {}", data);
                 Map<Integer, PacketRule> queueRules = RuleQueue.getQueueRules();
@@ -56,21 +63,24 @@ public class Consumer implements ConsumerStrategy {
         User user = new User();
         EngineIds engineIds = EngineIds.getInstance();
         Alerts alert = new Alerts();
-        alert.insert(
-            parsed.get("protocol"),
-            parsed.get("srcMac"),
-            parsed.get("srcIp"),
-            parsed.get("srcPort"),
-            parsed.get("dstMac"),
-            parsed.get("dstIp"),
-            parsed.get("dstPort"),
-            user.getUserId(),
-            ruleId
-        );
-        ElasticsearchManager obj = new ElasticsearchManager();
-        obj.indexUserPacket(user.getUserId(), data);
+        if (alertflag) {
+            alert.insert(
+                    parsed.get("protocol"),
+                    parsed.get("srcMac"),
+                    parsed.get("srcIp"),
+                    parsed.get("srcPort"),
+                    parsed.get("dstMac"),
+                    parsed.get("dstIp"),
+                    parsed.get("dstPort"),
+                    user.getUserId(),
+                    ruleId
+            );
 
-        engineIds.notifyObservers(new ParsedData(data, parsed, alertflag,ruleId));
+            ElasticsearchManager obj = new ElasticsearchManager();
+            obj.indexUserPacket(user.getUserId(), data);
+
+            engineIds.notifyObservers(new ParsedData(data, parsed, alertflag, ruleId));
+        }
     }
 
     @Override
