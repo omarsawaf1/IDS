@@ -1,5 +1,7 @@
 package com.example.designpatterns.ObserverPattern;
 
+import com.example.util.ParsedData;
+
 public interface Observer {
-    void update(String data);
+    void update(ParsedData data);
 }

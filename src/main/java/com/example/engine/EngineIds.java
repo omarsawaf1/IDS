@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.example.consumer.*;
 import com.example.producer.*;
+import com.example.util.*;
 import com.example.concurrent.PoolManager;
 import com.example.designpatterns.ObserverPattern.*;
 //applaying singleton
@@ -25,9 +26,9 @@ public class EngineIds implements Subject {
         return instance;
     }
 
-    // public static void startEngine() {
+    // public  void startEngine() {
     //     engineFlagRunning = true;
-    //     this.producerConsumer = new ProducerConsumer(new , new ProducerStrategy());
+    //     this.producerConsumer = new ProducerConsumer(new Consumer() , new ProducerLive());
     //     PoolManager.EngineIds().submit(() -> producerConsumer.runConsumer());
     //     PoolManager.EngineIds().submit(() -> producerConsumer.runProducer());
 
@@ -57,7 +58,7 @@ public class EngineIds implements Subject {
         observers.remove(observer);
     }
 
-    public void notifyObservers(String data) {
+    public void notifyObservers(ParsedData data) {
         for (Observer observer : observers) {
             PoolManager.EngineIds().submit(() -> observer.update(data));
         }
