@@ -6,7 +6,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.util.Arrays;
 
+import com.example.concurrent.RuleQueue;
+import com.example.util.PacketRule;
 public class RulesDialog extends JDialog {
     
     private JTable rulesTable;
@@ -19,14 +22,14 @@ public class RulesDialog extends JDialog {
         setLocationRelativeTo(parent);
         setLayout(new BorderLayout());
         getContentPane().setBackground(UIFactory.getBackgroundColor());
-        
+        // RuleQueue.getQueueRules();
         // Create main panel
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBackground(UIFactory.getBackgroundColor());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
         // Create rules table
-        String[] columns = {"Protocol", "Source:MAC_Address", "Source:IP_Address", "Source:Port", 
+        String[] columns = {"RuleId","Protocol", "Source:MAC_Address", "Source:IP_Address", "Source:Port", 
                            "Destination:MAC_Address", "Destination:IP_Address", "Destination:Port"};
         
         rulesTableModel = new DefaultTableModel(columns, 0) {
@@ -40,19 +43,12 @@ public class RulesDialog extends JDialog {
                 return false; // Make all cells non-editable in the table
             }
         };
-        
-        // Add sample rules
-        rulesTableModel.addRow(new Object[]{"TCP", "00:1A:2B:3C:4D:5E", "192.168.1.100", "Any", 
-                                           "00:5E:4D:3C:2B:1A", "10.0.0.1", "80"});
-        rulesTableModel.addRow(new Object[]{"UDP", "Any", "192.168.1.0/24", "Any", 
-                                           "Any", "8.8.8.8", "53"});
-        rulesTableModel.addRow(new Object[]{"ICMP", "Any", "Any", "Any", 
-                                           "Any", "192.168.1.1", "Any"});
-        rulesTableModel.addRow(new Object[]{"HTTP", "Any", "10.0.0.5", "Any", 
-                                           "Any", "Any", "80"});
-        rulesTableModel.addRow(new Object[]{"HTTPS", "Any", "Any", "Any", 
-                                           "Any", "93.184.216.34", "443"});
-        
+        // 
+        RuleQueue.queueLoadRulesList();
+        for (PacketRule rule : RuleQueue.getQueueRules().values()) {
+            rulesTableModel.addRow(new Object[]{rule.getId(), rule.getRawRule()[0], rule.getRawRule()[1], rule.getRawRule()[2], rule.getRawRule()[3], rule.getRawRule()[4], rule.getRawRule()[5], rule.getRawRule()[6]}); 
+        }
+        // 
         rulesTable = new JTable(rulesTableModel);
         rulesTable.setBackground(UIFactory.getSecondaryBackgroundColor());
         rulesTable.setForeground(UIFactory.getTextColor());
@@ -121,6 +117,10 @@ public class RulesDialog extends JDialog {
                     JOptionPane.YES_NO_OPTION);
                 
                 if (confirm == JOptionPane.YES_OPTION) {
+                    // 
+                    int ruleId = (int) rulesTableModel.getValueAt(selectedRow, 0);
+                    RuleQueue.removeRuleFromQueueById(ruleId);
+                    // 
                     rulesTableModel.removeRow(selectedRow);
                     rulesChanged = true;
                     JOptionPane.showMessageDialog(this, 
@@ -254,13 +254,14 @@ public class RulesDialog extends JDialog {
         
         // If editing an existing rule, populate the fields
         if (editRowIndex != null) {
-            protocolComboBox.setSelectedItem(rulesTableModel.getValueAt(editRowIndex, 0));
-            sourceMacField.setText((String) rulesTableModel.getValueAt(editRowIndex, 1));
-            sourceIpField.setText((String) rulesTableModel.getValueAt(editRowIndex, 2));
-            sourcePortField.setText((String) rulesTableModel.getValueAt(editRowIndex, 3));
-            destMacField.setText((String) rulesTableModel.getValueAt(editRowIndex, 4));
-            destIpField.setText((String) rulesTableModel.getValueAt(editRowIndex, 5));
-            destPortField.setText((String) rulesTableModel.getValueAt(editRowIndex, 6));
+            // sourceMacField.setText((String) rulesTableModel.getValueAt(editRowIndex, 0));
+            protocolComboBox.setSelectedItem(rulesTableModel.getValueAt(editRowIndex, 1));
+            sourceMacField.setText((String) rulesTableModel.getValueAt(editRowIndex, 2));
+            sourceIpField.setText((String) rulesTableModel.getValueAt(editRowIndex, 3));
+            sourcePortField.setText((String) rulesTableModel.getValueAt(editRowIndex, 4));
+            destMacField.setText((String) rulesTableModel.getValueAt(editRowIndex, 5));
+            destIpField.setText((String) rulesTableModel.getValueAt(editRowIndex, 6));
+            destPortField.setText((String) rulesTableModel.getValueAt(editRowIndex, 7));
         } else {
             sourceMacField.setText("Any");
             sourceIpField.setText("Any");
@@ -331,6 +332,7 @@ public class RulesDialog extends JDialog {
         
         // Add action listeners
         saveButton.addActionListener(e -> {
+            String ruleId="";
             String protocol = (String) protocolComboBox.getSelectedItem();
             String sourceMac = sourceMacField.getText().trim();
             String sourceIp = sourceIpField.getText().trim();
@@ -346,7 +348,17 @@ public class RulesDialog extends JDialog {
             if (destIp.isEmpty()) destIp = "Any";
             if (destPort.isEmpty()) destPort = "Any";
             
-            Object[] rowData = {
+            String[] rowData = {
+                ruleId,
+                protocol,
+                sourceMac,
+                sourceIp,
+                sourcePort,
+                destMac,
+                destIp,
+                destPort
+            };
+            String[] queueData = {
                 protocol,
                 sourceMac,
                 sourceIp,
@@ -367,6 +379,8 @@ public class RulesDialog extends JDialog {
                     JOptionPane.INFORMATION_MESSAGE);
             } else {
                 // Add new row
+
+                rowData[0]=Integer.toString(RuleQueue.addRuleToQueue(queueData));
                 rulesTableModel.addRow(rowData);
                 JOptionPane.showMessageDialog(ruleDialog,
                     "Rule added successfully.",
