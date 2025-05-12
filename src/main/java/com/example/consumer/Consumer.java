@@ -12,6 +12,9 @@ import com.example.util.*;
 import com.example.concurrent.RuleQueue;
 import com.example.database.mysql.Alerts;
 import com.example.util.PacketParser;
+import com.example.concurrent.PoolManager;
+import co.elastic.clients.elasticsearch.nodes.Pool;
+
 import com.example.database.ElasticSearch.ElasticsearchManager;
 
 public class Consumer implements ConsumerStrategy {
@@ -22,17 +25,16 @@ public class Consumer implements ConsumerStrategy {
     public void start(BlockingQueue<String> queue) {
         startFlag = true;
         logger.info("Consumer started.");
-        Integer ruleId = null;
+        Integer ruleId = -1;
         PacketRule rule;
+        int count = 0;
         while (startFlag) {
             try {
                 String data = queue.take(); // block until packet available
                 boolean alert = false;
                 logger.debug("Processed data: {}", data);
                 Map<Integer, PacketRule> queueRules = RuleQueue.getQueueRules();
-                Map<String, String> parsed = PacketParser.parsePacket(data);
-                System.out.println(parsed);
-                if (parsed == null) continue; // skip invalid packets
+                // Map<String, String> parsed = PacketParser.parsePacket(data);
                 for (Map.Entry<Integer, PacketRule> entry : queueRules.entrySet()) {
                     ruleId = entry.getKey();
                     rule = entry.getValue();
@@ -42,8 +44,7 @@ public class Consumer implements ConsumerStrategy {
                         break;
                     }
                 }
-                this.compute(data, parsed, ruleId, alert);
-
+                System.out.println(count++);
             } catch (InterruptedException e) {
                 logger.error("Consumer interrupted", e);
                 Thread.currentThread().interrupt();
@@ -72,9 +73,14 @@ public class Consumer implements ConsumerStrategy {
 
             // ElasticsearchManager obj = new ElasticsearchManager();
             // obj.indexUserPacket(user.getUserId(), data);
-            ParsedData parsedData = new ParsedData(data, parsed, alertflag, ruleId);
+            try{
+
+                ParsedData parsedData = new ParsedData(data, alertflag, ruleId);
+            }catch(Exception e){
+                System.out.println(e);
+            }
             // engineIds.notifyObservers(parsedData);
-            System.out.println("hello world");
+            System.out.println(data);
     }
     
 
@@ -84,4 +90,5 @@ public class Consumer implements ConsumerStrategy {
         logger.info("Consumer stop requested.");
     }
 }
+
 

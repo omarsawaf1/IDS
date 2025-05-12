@@ -63,9 +63,8 @@ public class EngineIds implements Subject {
     }
 
     public void notifyObservers(ParsedData data) {
-        // for (Observer observer : observers) {
-        //     PoolManager.guiPool().submit(() -> observer.update(data));
-        // }
-        System.out.println(data.getrowData());
+        for (Observer observer : observers) {
+            PoolManager.guiPool().submit(() -> observer.update(data));
+        }
     }
 }

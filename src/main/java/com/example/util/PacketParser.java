@@ -11,35 +11,54 @@ public class PacketParser {
     public static String[] matcher(String packet) {
         logger.debug("Parsing packet: {}", packet);
         String[] fields = packet.split("\\n");
+
+        // Check if the packet has enough data to parse
+        if (fields.length < 3) {
+            logger.warn("Malformed packet: {} (not enough fields)", packet);
+            return new String[8]; // Return empty data array if packet is malformed
+        }
+
         String[] extractedData = new String[8];
 
-        // Extracting MAC addresses
-        extractedData[5] = fields[1].substring(fields[1].indexOf(":") + 2);
-        extractedData[6] = fields[2].substring(fields[2].indexOf(":") + 2);
-
-        for (String field : fields) {
-            if (field.contains("Destination port:")) {
-                int index = field.indexOf(":");
-                extractedData[4] = field.substring(index + 2);
-            } else if (field.contains("Source port:")) {
-                int index = field.indexOf(":");
-                extractedData[2] = field.substring(index + 2);
-            } else if (field.contains("TCP")) {
-                extractedData[0] = "TCP";
-            } else if (field.contains("UDP")) {
-                extractedData[0] = "UDP";
-            } else if (field.contains("Destination address:")) {
-                int index = field.indexOf(":");
-                extractedData[3] = field.substring(index + 3);
-            } else if (field.contains("Source address:")) {
-                int index = field.indexOf(":");
-                extractedData[1] = field.substring(index + 3);
-            } else if (field.contains("Hex stream: ")) {
-                int index = field.indexOf(":");
-                String hexStream = field.substring(index + 1).replaceAll(" ", "");
-                extractedData[7] = HexToAscii.hexToAscii(hexStream);
+        try {
+            // Extracting MAC addresses
+            if (fields.length > 1) {
+                extractedData[5] = fields[1].substring(fields[1].indexOf(":") + 2);
             }
+            if (fields.length > 2) {
+                extractedData[6] = fields[2].substring(fields[2].indexOf(":") + 2);
+            }
+
+            // Parsing fields based on known patterns
+            for (String field : fields) {
+                if (field.contains("Destination port:")) {
+                    int index = field.indexOf(":");
+                    extractedData[4] = field.substring(index + 2);
+                } else if (field.contains("Source port:")) {
+                    int index = field.indexOf(":");
+                    extractedData[2] = field.substring(index + 2);
+                } else if (field.contains("TCP")) {
+                    extractedData[0] = "TCP";
+                } else if (field.contains("UDP")) {
+                    extractedData[0] = "UDP";
+                } else if (field.contains("Destination address:")) {
+                    int index = field.indexOf(":");
+                    extractedData[3] = field.substring(index + 3);
+                } else if (field.contains("Source address:")) {
+                    int index = field.indexOf(":");
+                    extractedData[1] = field.substring(index + 3);
+                } else if (field.contains("Hex stream: ")) {
+                    int index = field.indexOf(":");
+                    String hexStream = field.substring(index + 1).replaceAll(" ", "");
+                    extractedData[7] = HexToAscii.hexToAscii(hexStream);
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("Error parsing packet fields: {}", e.getMessage());
+            return new String[8]; // Return empty data array if error occurs
         }
+
         logger.debug("Extracted data: {}", (Object) extractedData);
         return extractedData;
     }
@@ -47,12 +66,23 @@ public class PacketParser {
     public static Map<String, String> parsePacket(String packet) {
         if (packet == null) {
             logger.warn("Received null packet");
-            return null;
+            return null; // Return null if packet is null
         }
+
         logger.debug("Received packet for parsing");
+
+        // Safe initialization
         Map<String, String> packetData = new HashMap<>();
+
+        // Parse packet data
         String[] extractedData = matcher(packet);
 
+        if (extractedData == null || extractedData.length < 8) {
+            logger.warn("Packet parsing failed for packet: {}", packet);
+            return null; // Return null if parsing failed
+        }
+
+        // Populate map with parsed data
         packetData.put("protocol", extractedData[0]);
         packetData.put("srcIp", extractedData[1]);
         packetData.put("srcPort", extractedData[2]);
@@ -61,12 +91,12 @@ public class PacketParser {
         packetData.put("dstMac", extractedData[5]);
         packetData.put("srcMac", extractedData[6]);
 
+        // Check if HTTP data exists
         if (extractedData[4].contains("(HTTP)")) {
             packetData.put("data", extractedData[7]);
         }
-        logger.debug("Parsed packet data: {}", packetData);
 
+        logger.debug("Parsed packet data: {}", packetData);
         return packetData;
     }
 }
-

@@ -7,10 +7,9 @@ public class ParsedData {
     private String rowData;
     private Map<String, String> parsedData;
     private boolean alertflag;
-    private int ruleid;
-    public ParsedData(String rowData, Map<String, String> parsedData, boolean alertflag,int ruleid) {
+    private Integer ruleid;
+    public ParsedData(String rowData, boolean alertflag,int ruleid) {
         this.rowData = rowData;
-        this.parsedData = parsedData;
         this.alertflag = alertflag;
         this.ruleid = ruleid;
     }
