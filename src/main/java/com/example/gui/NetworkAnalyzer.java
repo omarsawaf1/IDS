@@ -28,8 +28,8 @@ public class NetworkAnalyzer extends JFrame implements Observer {
     private boolean isCapturing = false;
     private String currentFilter = "";
     private JFrame parentFrame;
-private JButton alertPageBtn;
-private AlertPage alertPage;
+    private JButton alertPageBtn;
+    private AlertPage alertPage;
     // Add this at the top of the class
     private static final Logger logger = LoggerFactory.getLogger(NetworkAnalyzer.class);
     
