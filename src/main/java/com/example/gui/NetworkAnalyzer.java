@@ -55,6 +55,14 @@ private AlertPage alertPage;
     setTitle("Network Analyzer");
     setSize(1200, 700);
     setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    this.addWindowListener(new WindowAdapter() {
+        @Override
+        public void windowClosed(WindowEvent e) {
+            // Open the previous window (WelcomeScreen2) when this window is closed
+            WelcomeScreen2 welcomeScreen = new WelcomeScreen2();
+            welcomeScreen.setVisible(true);
+        }
+    });
     setLocationRelativeTo(parent);
             
     // Initialize ElasticsearchManager
