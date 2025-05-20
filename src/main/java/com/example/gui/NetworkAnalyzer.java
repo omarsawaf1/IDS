@@ -701,7 +701,6 @@ private void addPacketToTable(ParsedData parsedData) {
         new SwingWorker<List<String>, Void>() {
             @Override
             protected List<String> doInBackground() {
-                System.out.println(elasticsearchManager.printUserData(3));
                 return elasticsearchManager.searchUserPackets(currentUserId, keyword);
             }
                                                     

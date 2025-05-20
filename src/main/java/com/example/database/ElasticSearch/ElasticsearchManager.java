@@ -1,5 +1,4 @@
 package com.example.database.ElasticSearch;
-
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -14,6 +13,7 @@ import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.Refresh;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +27,8 @@ public class ElasticsearchManager {
     static {
         String dbHost = dotenv.get("DB_HOSTELASTICSEARCH");
         int dbPort = Integer.parseInt(dotenv.get("DB_PORTELASTICSEARCH"));
-        restClient = RestClient.builder(new HttpHost(dbHost, dbPort)).build();
+        RestClientBuilder builder = RestClient.builder(new HttpHost(dbHost, dbPort));
+        restClient = builder.build();
         ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
         client = new ElasticsearchClient(transport);
     }
@@ -71,30 +72,6 @@ public class ElasticsearchManager {
             return false;
         }
     }
-
-    public List<String> searchUserPackets(int userId, String keyword) {
-        String indexName = "user_" + userId;
-        List<String> results = new ArrayList<>();
-
-        try {
-            if (!indexExists(indexName)) {
-                return results;
-            }
-
-            SearchResponse<RawPacket> response = client.search(s -> s
-                            .index(indexName)
-                            .query(q -> q.match(m -> m.field("raw").query(keyword))),
-                    RawPacket.class);
-
-            for (Hit<RawPacket> hit : response.hits().hits()) {
-                results.add(hit.source().getRaw());
-            }
-        } catch (Exception e) {
-            System.err.println("Search failed: " + e.getMessage());
-        }
-
-        return results;
-    }
     public String[] printUserData(int userId) {
         String indexName = "user_" + userId;
         List<String> results = new ArrayList<>();
@@ -121,6 +98,31 @@ public class ElasticsearchManager {
 
         return results.toArray(new String[0]);
     }
+    public List<String> searchUserPackets(int userId, String keyword) {
+        String indexName = "user_" + userId;
+        List<String> results = new ArrayList<>();
+
+        try {
+            if (!indexExists(indexName)) {
+                return results;
+            }
+
+            SearchResponse<RawPacket> response = client.search(s -> s
+                            .index(indexName)
+                            .query(q -> q.match(m -> m.field("raw").query(keyword)))
+                            .size(1000),
+                    RawPacket.class);
+
+            for (Hit<RawPacket> hit : response.hits().hits()) {
+                results.add(hit.source().getRaw());
+            }
+        } catch (Exception e) {
+            System.err.println("Search failed: " + e.getMessage());
+        }
+
+        return results;
+    }
+
     public void createPacketIndex() {
         try {
             client.indices().create(c -> c.index("packets")
@@ -187,7 +189,8 @@ public class ElasticsearchManager {
         try {
             SearchResponse<PacketData> response = client.search(s -> s
                     .index("packets")
-                    .query(q -> q.match(m -> m.field("rawPacket").query(keyword))),
+                    .query(q -> q.match(m -> m.field("rawPacket").query(keyword)))
+                    .size(1000),
                     PacketData.class);
             printResults(response);
         } catch (Exception e) {
@@ -202,7 +205,8 @@ public class ElasticsearchManager {
                             .query(q -> q.range(r -> r
                                     .field("ipv4.ttl")
                                     .gte(JsonData.of(min))
-                                    .lte(JsonData.of(max)))),
+                                    .lte(JsonData.of(max))))
+                            .size(1000),
                     PacketData.class);
             printResults(response);
         } catch (Exception e) {
@@ -211,33 +215,33 @@ public class ElasticsearchManager {
     }
 
     private void searchGeneric(String field, Object value) {
-    try {
-        FieldValue fieldValue;
+        try {
+            FieldValue fieldValue = getFieldValue(value);
 
-        if (value instanceof String) {
-            fieldValue = FieldValue.of((String) value);
-        } else if (value instanceof Integer) {
-            fieldValue = FieldValue.of((Integer) value);
-        } else if (value instanceof Long) {
-            fieldValue = FieldValue.of((Long) value);
-        } else if (value instanceof Boolean) {
-            fieldValue = FieldValue.of((Boolean) value);
-        } else {
-            throw new IllegalArgumentException("Unsupported value type: " + value.getClass());
+            SearchResponse<PacketData> response = client.search(s -> s
+                            .index("packets")
+                            .query(q -> q.term(t -> t.field(field).value(fieldValue)))
+                            .size(1000),
+                    PacketData.class);
+
+            printResults(response);
+        } catch (Exception e) {
+            System.err.println("Search failed on field " + field + ": " + e.getMessage());
         }
-
-        SearchResponse<PacketData> response = client.search(s -> s
-                        .index("packets")
-                        .query(q -> q.term(t -> t.field(field).value(fieldValue))),
-                PacketData.class);
-
-        printResults(response);
-    } catch (Exception e) {
-        System.err.println("Search failed on field " + field + ": " + e.getMessage());
     }
-}
 
-
+    private FieldValue getFieldValue(Object value) {
+        if (value instanceof String) {
+            return FieldValue.of((String) value);
+        } else if (value instanceof Integer) {
+            return FieldValue.of((Integer) value);
+        } else if (value instanceof Long) {
+            return FieldValue.of((Long) value);
+        } else if (value instanceof Boolean) {
+            return FieldValue.of((Boolean) value);
+        }
+        throw new IllegalArgumentException("Unsupported value type: " + value.getClass());
+    }
 
     private void printResults(SearchResponse<PacketData> response) {
         System.out.println("Found " + response.hits().hits().size() + " packets:");
