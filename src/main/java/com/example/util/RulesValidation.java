@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 public class RulesValidation {
     private static final Logger log = LoggerFactory.getLogger(RulesValidation.class);
 
+    // public static void main(String[] args) {
+    //     String[] rule = {"TCP","f4:b3:01:11:f1:4d", "any", "any","d4:6b:a6:cb:be:82", "76.223.11.49", "80"};
+    //     System.out.println("Result: " + rulesValidation(rule));
+    // }
     public static boolean rulesValidation(String[] token) {
         // String[] rule = {"TCP","f4:b3:01:11:f1:4d", "any", "any","d4:6b:a6:cb:be:82", "76.223.11.49", "80"};
         log.info("Starting Validation...");

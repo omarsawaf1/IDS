@@ -6,12 +6,21 @@ import java.awt.event.MouseEvent;
 import java.net.URI;
 
 public class AboutDialog extends JDialog {
+    private static final Color PRIMARY_BACKGROUND_CHARCOAL_BLACK = new Color(0x0D1117);
+    private static final Color PRIMARY_BACKGROUND_GRAPHITE_GRAY = new Color(0x161B22);
+    private static final Color SECONDARY_SLATE_GRAY = new Color(0x21262D);
+    private static final Color SECONDARY_STEEL_GRAY = new Color(0x2D333B);
+    private static final Color ACCENT_CYBER_BLUE = new Color(0x3B82F6);
+    private static final Color ACCENT_AQUA_TECH = new Color(0x00BFFF);
+    private static final Color TEXT_WHITE_SMOKE = new Color(0xF5F5F5);
+    private static final Color TEXT_COOL_GRAY = new Color(0xC9D1D9);
+    private static final Color TEXT_DIM_SILVER = new Color(0x8B949E);
     
     public AboutDialog(JFrame parent) {
         super(parent, "About Network Analyzer", true);
-        setSize(500, 400);
+        setSize(500, 550);
         setLocationRelativeTo(parent);
-        getContentPane().setBackground(new Color(30, 30, 30));
+        getContentPane().setBackground(PRIMARY_BACKGROUND_GRAPHITE_GRAY);
         
         initializeUI();
     }
@@ -22,18 +31,18 @@ public class AboutDialog extends JDialog {
         // Create content panel
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setBackground(new Color(30, 30, 30));
+        contentPanel.setBackground(PRIMARY_BACKGROUND_GRAPHITE_GRAY);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         // App logo/icon placeholder
         JPanel logoPanel = new JPanel();
-        logoPanel.setBackground(new Color(30, 30, 30));
+        logoPanel.setBackground(PRIMARY_BACKGROUND_GRAPHITE_GRAY);
         logoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
         logoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel logoLabel = new JLabel("Network Analyzer");
         logoLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        logoLabel.setForeground(new Color(0, 150, 200));
+        logoLabel.setForeground(ACCENT_CYBER_BLUE);
         logoPanel.add(logoLabel);
         
         // App information
@@ -47,8 +56,8 @@ public class AboutDialog extends JDialog {
                 "monitoring network traffic. It provides detailed packet inspection, " +
                 "protocol analysis, and security monitoring capabilities."
         );
-        descArea.setBackground(new Color(30, 30, 30));
-        descArea.setForeground(Color.LIGHT_GRAY);
+        descArea.setBackground(PRIMARY_BACKGROUND_GRAPHITE_GRAY);
+        descArea.setForeground(TEXT_COOL_GRAY);
         descArea.setFont(new Font("Arial", Font.PLAIN, 14));
         descArea.setLineWrap(true);
         descArea.setWrapStyleWord(true);
@@ -65,16 +74,16 @@ public class AboutDialog extends JDialog {
         // Credits panel
         JPanel creditsPanel = new JPanel();
         creditsPanel.setLayout(new BoxLayout(creditsPanel, BoxLayout.Y_AXIS));
-        creditsPanel.setBackground(new Color(40, 40, 40));
+        creditsPanel.setBackground(SECONDARY_SLATE_GRAY);
         creditsPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(60, 60, 60)),
+                BorderFactory.createLineBorder(SECONDARY_STEEL_GRAY),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         creditsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         creditsPanel.setMaximumSize(new Dimension(450, 120));
         
         JLabel creditsTitle = new JLabel("Credits");
         creditsTitle.setFont(new Font("Arial", Font.BOLD, 14));
-        creditsTitle.setForeground(Color.WHITE);
+        creditsTitle.setForeground(TEXT_WHITE_SMOKE);
         creditsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JTextArea creditsText = new JTextArea(
@@ -84,8 +93,8 @@ public class AboutDialog extends JDialog {
                 "• Log4j\n" +
                 "• Swing UI components"
         );
-        creditsText.setBackground(new Color(40, 40, 40));
-        creditsText.setForeground(Color.LIGHT_GRAY);
+        creditsText.setBackground(SECONDARY_SLATE_GRAY);
+        creditsText.setForeground(TEXT_COOL_GRAY);
         creditsText.setFont(new Font("Arial", Font.PLAIN, 12));
         creditsText.setEditable(false);
         creditsText.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -95,12 +104,11 @@ public class AboutDialog extends JDialog {
         creditsPanel.add(creditsText);
         
         // Close button
-        JButton closeButton = UIFactory.createStyledButton("Close", new Color(60, 60, 60));
+        JButton closeButton = UIFactory.createStyledButton("Close", SECONDARY_STEEL_GRAY);
         closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         closeButton.addActionListener(e -> dispose());
         
         // Add components to content panel
-             // Add components to content panel
         contentPanel.add(logoPanel);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 15)));
         contentPanel.add(versionLabel);
@@ -124,7 +132,7 @@ public class AboutDialog extends JDialog {
     private JLabel createInfoLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.PLAIN, 14));
-        label.setForeground(Color.WHITE);
+        label.setForeground(TEXT_WHITE_SMOKE);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
@@ -132,7 +140,7 @@ public class AboutDialog extends JDialog {
     private JLabel createLinkLabel(String text, String url) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.PLAIN, 14));
-        label.setForeground(new Color(100, 150, 255));
+        label.setForeground(ACCENT_AQUA_TECH);
         label.setCursor(new Cursor(Cursor.HAND_CURSOR));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -159,3 +167,4 @@ public class AboutDialog extends JDialog {
         return label;
     }
 }
+

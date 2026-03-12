@@ -8,12 +8,9 @@ import org.slf4j.LoggerFactory;
 import com.example.designpatterns.StrategyPattern.ConsumerStrategy;
 import com.example.engine.EngineIds;
 import com.example.database.mysql.User;
-import com.example.util.*;
 import com.example.concurrent.RuleQueue;
 import com.example.database.mysql.Alerts;
 import com.example.util.PacketParser;
-import com.example.concurrent.PoolManager;
-import co.elastic.clients.elasticsearch.nodes.Pool;
 
 import com.example.database.ElasticSearch.ElasticsearchManager;
 
